@@ -88,7 +88,308 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var Config = {
+    jQuery: __webpack_require__(7),
+    _: __webpack_require__(8),
+    gameWidth: window.innerWidth,
+    gameHeight: window.innerHeight,
+    gameStatus: {
+        playing: 'Playing',
+        start: 'Start',
+        paused: 'Paused',
+        crashed: 'Crashed'
+    },
+    collisionAttempts: 5,
+    levelCoverage: 10000,
+    maxLevels: 10
+};
+
+exports.default = Config;
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _mediator = __webpack_require__(6);
+
+var _mediator2 = _interopRequireDefault(_mediator);
+
+var _config = __webpack_require__(0);
+
+var _config2 = _interopRequireDefault(_config);
+
+var _canvas = __webpack_require__(10);
+
+var _canvas2 = _interopRequireDefault(_canvas);
+
+var _assets = __webpack_require__(11);
+
+var _assets2 = _interopRequireDefault(_assets);
+
+var _skier = __webpack_require__(12);
+
+var _skier2 = _interopRequireDefault(_skier);
+
+var _controls = __webpack_require__(13);
+
+var _controls2 = _interopRequireDefault(_controls);
+
+var _obstacles = __webpack_require__(14);
+
+var _obstacles2 = _interopRequireDefault(_obstacles);
+
+var _user = __webpack_require__(15);
+
+var _user2 = _interopRequireDefault(_user);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+//const Mediator = require('./mediator');
+// const Assets = require('./assets');
+// console.log('mediator',Mediator);
+// console.log('assets',Assets);
+//console.log(new Assets());
+exports.default = function (window, mediator) {
+    var FacadeMediator = window.FacadeMediator || {};
+
+    FacadeMediator.subscribe = mediator.subscribe;
+    FacadeMediator.publish = mediator.publish;
+    FacadeMediator.installTo = mediator.installTo;
+
+    FacadeMediator.canvas = _canvas2.default;
+    // console.log(typeof(Assets));
+    //  console.log(Assets);
+    FacadeMediator.installTo(_assets2.default.prototype);
+    FacadeMediator.assets = new _assets2.default();
+
+    FacadeMediator.installTo(_skier2.default.prototype);
+    FacadeMediator.skier = new _skier2.default();
+
+    FacadeMediator.installTo(_controls2.default.prototype);
+    FacadeMediator.controls = new _controls2.default();
+
+    FacadeMediator.installTo(_obstacles2.default.prototype);
+    FacadeMediator.obstacles = new _obstacles2.default();
+
+    FacadeMediator.installTo(_user2.default.prototype);
+    FacadeMediator.user = new _user2.default();
+
+    FacadeMediator.gameLoop = function () {
+        if (FacadeMediator.skier.totalCollisions === _config2.default.collisionAttempts) {
+            alert('GAME OVER'); //update scores in localstorage
+            FacadeMediator.publish('localStorage');
+            return;
+        }
+        FacadeMediator.canvas.context.save();
+        // Retina support
+        FacadeMediator.canvas.context.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+        FacadeMediator.canvas.clearCanvas();
+
+        FacadeMediator.skier.moveSkier(FacadeMediator.obstacles);
+
+        FacadeMediator.skier.checkIfSkierHitObstacle(FacadeMediator.obstacles);
+
+        FacadeMediator.skier.drawSkier();
+
+        FacadeMediator.obstacles.drawObstacles();
+
+        FacadeMediator.canvas.context.restore();
+
+        window.requestAnimationFrame(FacadeMediator.gameLoop);
+    };
+
+    return FacadeMediator;
+}(window, _mediator2.default);
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function (module) {
+	if (!module.webpackPolyfill) {
+		module.deprecate = function () {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function get() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function get() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports) {
+
+/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
+module.exports = __webpack_amd_options__;
+
+/* WEBPACK VAR INJECTION */}.call(this, {}))
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _workflow = __webpack_require__(5);
+
+var _workflow2 = _interopRequireDefault(_workflow);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+new _workflow2.default().start();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _facademediator = __webpack_require__(1);
+
+var _facademediator2 = _interopRequireDefault(_facademediator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var WorkFlowManager = function () {
+    function WorkFlowManager() {
+        _classCallCheck(this, WorkFlowManager);
+
+        _facademediator2.default.subscribe('onStart', function () {
+            var name = null;
+            while (name === null || name === '') {
+                name = prompt("Please enter your name", "");
+            }
+            _facademediator2.default.publish('addUser', name);
+            _facademediator2.default.publish('initializeControls');
+            _facademediator2.default.publish('loadAssets', _facademediator2.default.gameLoop);
+        });
+    }
+
+    _createClass(WorkFlowManager, [{
+        key: 'start',
+        value: function start() {
+            _facademediator2.default.publish('onStart');
+        }
+    }]);
+
+    return WorkFlowManager;
+}();
+
+exports.default = WorkFlowManager;
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+exports.default = function () {
+
+    var messages = {};
+
+    var Mediator = function () {
+        function Mediator() {
+            _classCallCheck(this, Mediator);
+        }
+
+        _createClass(Mediator, null, [{
+            key: "subscribe",
+            value: function subscribe(msg, fn, context) {
+                if (!messages[msg]) {
+                    messages[msg] = [];
+                }
+                messages[msg].push({ context: context || this, callback: fn });
+            }
+        }, {
+            key: "publish",
+            value: function publish(msg) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                if (!messages[msg]) {
+                    return false;
+                }
+
+                messages[msg].forEach(function (subscription) {
+                    subscription.callback.apply(subscription.context, args);
+                });
+            }
+        }, {
+            key: "installTo",
+            value: function installTo(obj) {
+                obj.subscribe = Mediator.subscribe;
+                obj.publish = Mediator.publish;
+            }
+        }, {
+            key: "getMessages",
+            value: function getMessages() {
+                return messages;
+            }
+        }]);
+
+        return Mediator;
+    }();
+
+    return Mediator;
+}();
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+/* WEBPACK VAR INJECTION */(function(module) {var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+/*!
  * jQuery JavaScript Library v3.3.1
  * https://jquery.com/
  *
@@ -105,7 +406,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	"use strict";
 
-	if ( true && typeof module.exports === "object") {
+	if (( false ? undefined : _typeof(module)) === "object" && _typeof(module.exports) === "object") {
 
 		// For CommonJS and CommonJS-like environments where a proper `window`
 		// is present, execute the factory and get jQuery.
@@ -125,7 +426,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	}
 
 	// Pass this if window is not defined yet
-})(typeof window !== "undefined" ? window : this, function (window, noGlobal) {
+})(typeof window !== "undefined" ? window : undefined, function (window, noGlobal) {
 
 	// Edge <= 12 - 13+, Firefox <=18 - 45+, IE 10 - 11, Safari 5.1 - 9+, iOS 6 - 9.1
 	// throw exceptions when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
@@ -139,7 +440,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	var getProto = Object.getPrototypeOf;
 
-	var slice = arr.slice;
+	var _slice = arr.slice;
 
 	var concat = arr.concat;
 
@@ -201,7 +502,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		}
 
 		// Support: Android <=2.3 only (functionish RegExp)
-		return typeof obj === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj;
+		return (typeof obj === "undefined" ? "undefined" : _typeof(obj)) === "object" || typeof obj === "function" ? class2type[toString.call(obj)] || "object" : typeof obj === "undefined" ? "undefined" : _typeof(obj);
 	}
 	/* global Symbol */
 	// Defining this global in .eslintrc.json would create a danger of using the global
@@ -212,7 +513,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 	// Define a local copy of jQuery
-	jQuery = function (selector, context) {
+	jQuery = function jQuery(selector, context) {
 
 		// The jQuery object is actually just the init constructor 'enhanced'
 		// Need init if jQuery is called (just allow error to be thrown if not included)
@@ -234,17 +535,17 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		// The default length of a jQuery object is 0
 		length: 0,
 
-		toArray: function () {
-			return slice.call(this);
+		toArray: function toArray() {
+			return _slice.call(this);
 		},
 
 		// Get the Nth element in the matched element set OR
 		// Get the whole matched element set as a clean array
-		get: function (num) {
+		get: function get(num) {
 
 			// Return all the elements in a clean array
 			if (num == null) {
-				return slice.call(this);
+				return _slice.call(this);
 			}
 
 			// Return just the one element from the set
@@ -253,7 +554,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		// Take an array of elements and push it onto the stack
 		// (returning the new matched element set)
-		pushStack: function (elems) {
+		pushStack: function pushStack(elems) {
 
 			// Build a new jQuery matched element set
 			var ret = jQuery.merge(this.constructor(), elems);
@@ -266,35 +567,35 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		},
 
 		// Execute a callback for every element in the matched set.
-		each: function (callback) {
+		each: function each(callback) {
 			return jQuery.each(this, callback);
 		},
 
-		map: function (callback) {
+		map: function map(callback) {
 			return this.pushStack(jQuery.map(this, function (elem, i) {
 				return callback.call(elem, i, elem);
 			}));
 		},
 
-		slice: function () {
-			return this.pushStack(slice.apply(this, arguments));
+		slice: function slice() {
+			return this.pushStack(_slice.apply(this, arguments));
 		},
 
-		first: function () {
+		first: function first() {
 			return this.eq(0);
 		},
 
-		last: function () {
+		last: function last() {
 			return this.eq(-1);
 		},
 
-		eq: function (i) {
+		eq: function eq(i) {
 			var len = this.length,
 			    j = +i + (i < 0 ? len : 0);
 			return this.pushStack(j >= 0 && j < len ? [this[j]] : []);
 		},
 
-		end: function () {
+		end: function end() {
 			return this.prevObject || this.constructor();
 		},
 
@@ -327,7 +628,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		}
 
 		// Handle case when target is a string or something (possible in deep copy)
-		if (typeof target !== "object" && !isFunction(target)) {
+		if ((typeof target === "undefined" ? "undefined" : _typeof(target)) !== "object" && !isFunction(target)) {
 			target = {};
 		}
 
@@ -385,13 +686,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		// Assume jQuery is ready without the ready module
 		isReady: true,
 
-		error: function (msg) {
+		error: function error(msg) {
 			throw new Error(msg);
 		},
 
-		noop: function () {},
+		noop: function noop() {},
 
-		isPlainObject: function (obj) {
+		isPlainObject: function isPlainObject(obj) {
 			var proto, Ctor;
 
 			// Detect obvious negatives
@@ -412,7 +713,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return typeof Ctor === "function" && fnToString.call(Ctor) === ObjectFunctionString;
 		},
 
-		isEmptyObject: function (obj) {
+		isEmptyObject: function isEmptyObject(obj) {
 
 			/* eslint-disable no-unused-vars */
 			// See https://github.com/eslint/eslint/issues/6125
@@ -425,11 +726,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		},
 
 		// Evaluates a script in a global context
-		globalEval: function (code) {
+		globalEval: function globalEval(code) {
 			DOMEval(code);
 		},
 
-		each: function (obj, callback) {
+		each: function each(obj, callback) {
 			var length,
 			    i = 0;
 
@@ -452,12 +753,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		},
 
 		// Support: Android <=4.0 only
-		trim: function (text) {
+		trim: function trim(text) {
 			return text == null ? "" : (text + "").replace(rtrim, "");
 		},
 
 		// results is for internal usage only
-		makeArray: function (arr, results) {
+		makeArray: function makeArray(arr, results) {
 			var ret = results || [];
 
 			if (arr != null) {
@@ -471,13 +772,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return ret;
 		},
 
-		inArray: function (elem, arr, i) {
+		inArray: function inArray(elem, arr, i) {
 			return arr == null ? -1 : indexOf.call(arr, elem, i);
 		},
 
 		// Support: Android <=4.0 only, PhantomJS 1 only
 		// push.apply(_, arraylike) throws on ancient WebKit
-		merge: function (first, second) {
+		merge: function merge(first, second) {
 			var len = +second.length,
 			    j = 0,
 			    i = first.length;
@@ -491,7 +792,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return first;
 		},
 
-		grep: function (elems, callback, invert) {
+		grep: function grep(elems, callback, invert) {
 			var callbackInverse,
 			    matches = [],
 			    i = 0,
@@ -511,7 +812,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		},
 
 		// arg is for internal usage only
-		map: function (elems, callback, arg) {
+		map: function map(elems, callback, arg) {
 			var length,
 			    value,
 			    i = 0,
@@ -620,7 +921,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		    classCache = createCache(),
 		    tokenCache = createCache(),
 		    compilerCache = createCache(),
-		    sortOrder = function (a, b) {
+		    sortOrder = function sortOrder(a, b) {
 			if (a === b) {
 				hasDuplicate = true;
 			}
@@ -638,7 +939,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		// Use a stripped-down indexOf as it's faster than native
 		// https://jsperf.com/thor-indexof-vs-for/5
-		indexOf = function (list, elem) {
+		indexOf = function indexOf(list, elem) {
 			var i = 0,
 			    len = list.length;
 			for (; i < len; i++) {
@@ -710,7 +1011,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		// CSS escapes
 		// http://www.w3.org/TR/CSS21/syndata.html#escaped-characters
 		runescape = new RegExp("\\\\([\\da-f]{1,6}" + whitespace + "?|(" + whitespace + ")|.)", "ig"),
-		    funescape = function (_, escaped, escapedWhitespace) {
+		    funescape = function funescape(_, escaped, escapedWhitespace) {
 			var high = "0x" + escaped - 0x10000;
 			// NaN means non-codepoint
 			// Support: Firefox<24
@@ -726,7 +1027,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		// CSS string/identifier serialization
 		// https://drafts.csswg.org/cssom/#common-serializing-idioms
 		rcssescape = /([\0-\x1f\x7f]|^-?\d)|^-$|[^\0-\x1f\x7f-\uFFFF\w-]/g,
-		    fcssescape = function (ch, asCodePoint) {
+		    fcssescape = function fcssescape(ch, asCodePoint) {
 			if (asCodePoint) {
 
 				// U+0000 NULL becomes U+FFFD REPLACEMENT CHARACTER
@@ -747,7 +1048,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		// See setDocument()
 		// Removing the function wrapper causes a "Permission Denied"
 		// error in IE
-		unloadHandler = function () {
+		unloadHandler = function unloadHandler() {
 			setDocument();
 		},
 		    disabledAncestor = addCombinator(function (elem) {
@@ -1655,7 +1956,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			},
 
 			preFilter: {
-				"ATTR": function (match) {
+				"ATTR": function ATTR(match) {
 					match[1] = match[1].replace(runescape, funescape);
 
 					// Move the given value to match[3] whether quoted or unquoted
@@ -1668,7 +1969,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					return match.slice(0, 4);
 				},
 
-				"CHILD": function (match) {
+				"CHILD": function CHILD(match) {
 					/* matches from matchExpr["CHILD"]
      	1 type (only|nth|...)
      	2 what (child|of-type)
@@ -1700,7 +2001,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					return match;
 				},
 
-				"PSEUDO": function (match) {
+				"PSEUDO": function PSEUDO(match) {
 					var excess,
 					    unquoted = !match[6] && match[2];
 
@@ -1731,7 +2032,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 			filter: {
 
-				"TAG": function (nodeNameSelector) {
+				"TAG": function TAG(nodeNameSelector) {
 					var nodeName = nodeNameSelector.replace(runescape, funescape).toLowerCase();
 					return nodeNameSelector === "*" ? function () {
 						return true;
@@ -1740,7 +2041,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					};
 				},
 
-				"CLASS": function (className) {
+				"CLASS": function CLASS(className) {
 					var pattern = classCache[className + " "];
 
 					return pattern || (pattern = new RegExp("(^|" + whitespace + ")" + className + "(" + whitespace + "|$)")) && classCache(className, function (elem) {
@@ -1748,7 +2049,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					});
 				},
 
-				"ATTR": function (name, operator, check) {
+				"ATTR": function ATTR(name, operator, check) {
 					return function (elem) {
 						var result = Sizzle.attr(elem, name);
 
@@ -1765,7 +2066,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					};
 				},
 
-				"CHILD": function (type, what, argument, first, last) {
+				"CHILD": function CHILD(type, what, argument, first, last) {
 					var simple = type.slice(0, 3) !== "nth",
 					    forward = type.slice(-4) !== "last",
 					    ofType = what === "of-type";
@@ -1887,7 +2188,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					};
 				},
 
-				"PSEUDO": function (pseudo, argument) {
+				"PSEUDO": function PSEUDO(pseudo, argument) {
 					// pseudo-class names are case-insensitive
 					// http://www.w3.org/TR/selectors/#pseudo-classes
 					// Prioritize by case sensitivity in case custom pseudos are added with uppercase letters
@@ -1992,16 +2293,16 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				}),
 
 				// Miscellaneous
-				"target": function (elem) {
+				"target": function target(elem) {
 					var hash = window.location && window.location.hash;
 					return hash && hash.slice(1) === elem.id;
 				},
 
-				"root": function (elem) {
+				"root": function root(elem) {
 					return elem === docElem;
 				},
 
-				"focus": function (elem) {
+				"focus": function focus(elem) {
 					return elem === document.activeElement && (!document.hasFocus || document.hasFocus()) && !!(elem.type || elem.href || ~elem.tabIndex);
 				},
 
@@ -2009,14 +2310,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				"enabled": createDisabledPseudo(false),
 				"disabled": createDisabledPseudo(true),
 
-				"checked": function (elem) {
+				"checked": function checked(elem) {
 					// In CSS3, :checked should return both checked and selected elements
 					// http://www.w3.org/TR/2011/REC-css3-selectors-20110929/#checked
 					var nodeName = elem.nodeName.toLowerCase();
 					return nodeName === "input" && !!elem.checked || nodeName === "option" && !!elem.selected;
 				},
 
-				"selected": function (elem) {
+				"selected": function selected(elem) {
 					// Accessing this property makes selected-by-default
 					// options in Safari work properly
 					if (elem.parentNode) {
@@ -2027,7 +2328,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				},
 
 				// Contents
-				"empty": function (elem) {
+				"empty": function empty(elem) {
 					// http://www.w3.org/TR/selectors/#empty-pseudo
 					// :empty is negated by element (1) or content nodes (text: 3; cdata: 4; entity ref: 5),
 					//   but not by others (comment: 8; processing instruction: 7; etc.)
@@ -2040,25 +2341,25 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					return true;
 				},
 
-				"parent": function (elem) {
+				"parent": function parent(elem) {
 					return !Expr.pseudos["empty"](elem);
 				},
 
 				// Element/input types
-				"header": function (elem) {
+				"header": function header(elem) {
 					return rheader.test(elem.nodeName);
 				},
 
-				"input": function (elem) {
+				"input": function input(elem) {
 					return rinputs.test(elem.nodeName);
 				},
 
-				"button": function (elem) {
+				"button": function button(elem) {
 					var name = elem.nodeName.toLowerCase();
 					return name === "input" && elem.type === "button" || name === "button";
 				},
 
-				"text": function (elem) {
+				"text": function text(elem) {
 					var attr;
 					return elem.nodeName.toLowerCase() === "input" && elem.type === "text" && (
 
@@ -2455,7 +2756,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		function matcherFromGroupMatchers(elementMatchers, setMatchers) {
 			var bySet = setMatchers.length > 0,
 			    byElement = elementMatchers.length > 0,
-			    superMatcher = function (seed, context, xml, results, outermost) {
+			    superMatcher = function superMatcher(seed, context, xml, results, outermost) {
 				var elem,
 				    j,
 				    matcher,
@@ -2741,11 +3042,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	jQuery.contains = Sizzle.contains;
 	jQuery.escapeSelector = Sizzle.escape;
 
-	var dir = function (elem, dir, until) {
+	var dir = function dir(elem, _dir, until) {
 		var matched = [],
 		    truncate = until !== undefined;
 
-		while ((elem = elem[dir]) && elem.nodeType !== 9) {
+		while ((elem = elem[_dir]) && elem.nodeType !== 9) {
 			if (elem.nodeType === 1) {
 				if (truncate && jQuery(elem).is(until)) {
 					break;
@@ -2756,7 +3057,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		return matched;
 	};
 
-	var siblings = function (n, elem) {
+	var _siblings = function _siblings(n, elem) {
 		var matched = [];
 
 		for (; n; n = n.nextSibling) {
@@ -2819,7 +3120,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	};
 
 	jQuery.fn.extend({
-		find: function (selector) {
+		find: function find(selector) {
 			var i,
 			    ret,
 			    len = this.length,
@@ -2843,13 +3144,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 			return len > 1 ? jQuery.uniqueSort(ret) : ret;
 		},
-		filter: function (selector) {
+		filter: function filter(selector) {
 			return this.pushStack(winnow(this, selector || [], false));
 		},
-		not: function (selector) {
+		not: function not(selector) {
 			return this.pushStack(winnow(this, selector || [], true));
 		},
-		is: function (selector) {
+		is: function is(selector) {
 			return !!winnow(this,
 
 			// If this is a positional/relative selector, check membership in the returned set
@@ -2979,7 +3280,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	};
 
 	jQuery.fn.extend({
-		has: function (target) {
+		has: function has(target) {
 			var targets = jQuery(target, this),
 			    l = targets.length;
 
@@ -2993,7 +3294,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		closest: function (selectors, context) {
+		closest: function closest(selectors, context) {
 			var cur,
 			    i = 0,
 			    l = this.length,
@@ -3022,7 +3323,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		},
 
 		// Determine the position of an element within the set
-		index: function (elem) {
+		index: function index(elem) {
 
 			// No argument, return index in parent
 			if (!elem) {
@@ -3041,11 +3342,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			elem.jquery ? elem[0] : elem);
 		},
 
-		add: function (selector, context) {
+		add: function add(selector, context) {
 			return this.pushStack(jQuery.uniqueSort(jQuery.merge(this.get(), jQuery(selector, context))));
 		},
 
-		addBack: function (selector) {
+		addBack: function addBack(selector) {
 			return this.add(selector == null ? this.prevObject : this.prevObject.filter(selector));
 		}
 	});
@@ -3056,41 +3357,41 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	}
 
 	jQuery.each({
-		parent: function (elem) {
+		parent: function parent(elem) {
 			var parent = elem.parentNode;
 			return parent && parent.nodeType !== 11 ? parent : null;
 		},
-		parents: function (elem) {
+		parents: function parents(elem) {
 			return dir(elem, "parentNode");
 		},
-		parentsUntil: function (elem, i, until) {
+		parentsUntil: function parentsUntil(elem, i, until) {
 			return dir(elem, "parentNode", until);
 		},
-		next: function (elem) {
+		next: function next(elem) {
 			return sibling(elem, "nextSibling");
 		},
-		prev: function (elem) {
+		prev: function prev(elem) {
 			return sibling(elem, "previousSibling");
 		},
-		nextAll: function (elem) {
+		nextAll: function nextAll(elem) {
 			return dir(elem, "nextSibling");
 		},
-		prevAll: function (elem) {
+		prevAll: function prevAll(elem) {
 			return dir(elem, "previousSibling");
 		},
-		nextUntil: function (elem, i, until) {
+		nextUntil: function nextUntil(elem, i, until) {
 			return dir(elem, "nextSibling", until);
 		},
-		prevUntil: function (elem, i, until) {
+		prevUntil: function prevUntil(elem, i, until) {
 			return dir(elem, "previousSibling", until);
 		},
-		siblings: function (elem) {
-			return siblings((elem.parentNode || {}).firstChild, elem);
+		siblings: function siblings(elem) {
+			return _siblings((elem.parentNode || {}).firstChild, elem);
 		},
-		children: function (elem) {
-			return siblings(elem.firstChild);
+		children: function children(elem) {
+			return _siblings(elem.firstChild);
 		},
-		contents: function (elem) {
+		contents: function contents(elem) {
 			if (nodeName(elem, "iframe")) {
 				return elem.contentDocument;
 			}
@@ -3180,11 +3481,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 		// Flag to know if list was already fired
-		fired,
+		_fired,
 
 
 		// Flag to prevent firing
-		locked,
+		_locked,
 
 
 		// Actual callback list
@@ -3200,14 +3501,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 		// Fire callbacks
-		fire = function () {
+		fire = function fire() {
 
 			// Enforce single-firing
-			locked = locked || options.once;
+			_locked = _locked || options.once;
 
 			// Execute callbacks for all pending executions,
 			// respecting firingIndex overrides and runtime changes
-			fired = firing = true;
+			_fired = firing = true;
 			for (; queue.length; firingIndex = -1) {
 				memory = queue.shift();
 				while (++firingIndex < list.length) {
@@ -3230,7 +3531,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			firing = false;
 
 			// Clean up if we're done firing for good
-			if (locked) {
+			if (_locked) {
 
 				// Keep an empty list if we have data for future add calls
 				if (memory) {
@@ -3248,7 +3549,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		self = {
 
 			// Add a callback or a collection of callbacks to the list
-			add: function () {
+			add: function add() {
 				if (list) {
 
 					// If we have memory from a past run, we should fire after adding
@@ -3279,7 +3580,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			},
 
 			// Remove a callback from the list
-			remove: function () {
+			remove: function remove() {
 				jQuery.each(arguments, function (_, arg) {
 					var index;
 					while ((index = jQuery.inArray(arg, list, index)) > -1) {
@@ -3296,12 +3597,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 			// Check if a given callback is in the list.
 			// If no argument is given, return whether or not list has callbacks attached.
-			has: function (fn) {
+			has: function has(fn) {
 				return fn ? jQuery.inArray(fn, list) > -1 : list.length > 0;
 			},
 
 			// Remove all callbacks from the list
-			empty: function () {
+			empty: function empty() {
 				if (list) {
 					list = [];
 				}
@@ -3311,32 +3612,32 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			// Disable .fire and .add
 			// Abort any current/pending executions
 			// Clear all callbacks and values
-			disable: function () {
-				locked = queue = [];
+			disable: function disable() {
+				_locked = queue = [];
 				list = memory = "";
 				return this;
 			},
-			disabled: function () {
+			disabled: function disabled() {
 				return !list;
 			},
 
 			// Disable .fire
 			// Also disable .add unless we have memory (since it would have no effect)
 			// Abort any pending executions
-			lock: function () {
-				locked = queue = [];
+			lock: function lock() {
+				_locked = queue = [];
 				if (!memory && !firing) {
 					list = memory = "";
 				}
 				return this;
 			},
-			locked: function () {
-				return !!locked;
+			locked: function locked() {
+				return !!_locked;
 			},
 
 			// Call all callbacks with the given context and arguments
-			fireWith: function (context, args) {
-				if (!locked) {
+			fireWith: function fireWith(context, args) {
+				if (!_locked) {
 					args = args || [];
 					args = [context, args.slice ? args.slice() : args];
 					queue.push(args);
@@ -3348,14 +3649,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			},
 
 			// Call all the callbacks with the given arguments
-			fire: function () {
+			fire: function fire() {
 				self.fireWith(this, arguments);
 				return this;
 			},
 
 			// To know if the callbacks have already been called at least once
-			fired: function () {
-				return !!fired;
+			fired: function fired() {
+				return !!_fired;
 			}
 		};
 
@@ -3404,27 +3705,27 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	jQuery.extend({
 
-		Deferred: function (func) {
+		Deferred: function Deferred(func) {
 			var tuples = [
 
 			// action, add listener, callbacks,
 			// ... .then handlers, argument index, [final state]
 			["notify", "progress", jQuery.Callbacks("memory"), jQuery.Callbacks("memory"), 2], ["resolve", "done", jQuery.Callbacks("once memory"), jQuery.Callbacks("once memory"), 0, "resolved"], ["reject", "fail", jQuery.Callbacks("once memory"), jQuery.Callbacks("once memory"), 1, "rejected"]],
-			    state = "pending",
-			    promise = {
-				state: function () {
-					return state;
+			    _state = "pending",
+			    _promise = {
+				state: function state() {
+					return _state;
 				},
-				always: function () {
+				always: function always() {
 					deferred.done(arguments).fail(arguments);
 					return this;
 				},
-				"catch": function (fn) {
-					return promise.then(null, fn);
+				"catch": function _catch(fn) {
+					return _promise.then(null, fn);
 				},
 
 				// Keep pipe for back-compat
-				pipe: function () /* fnDone, fnFail, fnProgress */{
+				pipe: function pipe() /* fnDone, fnFail, fnProgress */{
 					var fns = arguments;
 
 					return jQuery.Deferred(function (newDefer) {
@@ -3448,13 +3749,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 						fns = null;
 					}).promise();
 				},
-				then: function (onFulfilled, onRejected, onProgress) {
+				then: function then(onFulfilled, onRejected, onProgress) {
 					var maxDepth = 0;
 					function resolve(depth, deferred, handler, special) {
 						return function () {
 							var that = this,
 							    args = arguments,
-							    mightThrow = function () {
+							    mightThrow = function mightThrow() {
 								var returned, then;
 
 								// Support: Promises/A+ section 2.3.3.3.3
@@ -3481,7 +3782,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 								// Support: Promises/A+ section 2.3.4
 								// https://promisesaplus.com/#point-64
 								// Only check objects and functions for thenability
-								typeof returned === "object" || typeof returned === "function") && returned.then;
+								(typeof returned === "undefined" ? "undefined" : _typeof(returned)) === "object" || typeof returned === "function") && returned.then;
 
 								// Handle a returned thenable
 								if (isFunction(then)) {
@@ -3576,8 +3877,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 				// Get a promise for this deferred
 				// If obj is provided, the promise aspect is added to the object
-				promise: function (obj) {
-					return obj != null ? jQuery.extend(obj, promise) : promise;
+				promise: function promise(obj) {
+					return obj != null ? jQuery.extend(obj, _promise) : _promise;
 				}
 			},
 			    deferred = {};
@@ -3590,7 +3891,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				// promise.progress = list.add
 				// promise.done = list.add
 				// promise.fail = list.add
-				promise[tuple[1]] = list.add;
+				_promise[tuple[1]] = list.add;
 
 				// Handle state
 				if (stateString) {
@@ -3598,7 +3899,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 						// state = "resolved" (i.e., fulfilled)
 						// state = "rejected"
-						state = stateString;
+						_state = stateString;
 					},
 
 					// rejected_callbacks.disable
@@ -3636,7 +3937,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 
 			// Make the deferred a promise
-			promise.promise(deferred);
+			_promise.promise(deferred);
 
 			// Call given func if any
 			if (func) {
@@ -3648,7 +3949,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		},
 
 		// Deferred helper
-		when: function (singleValue) {
+		when: function when(singleValue) {
 			var
 
 			// count of uncompleted subordinates
@@ -3661,7 +3962,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 			// subordinate fulfillment data
 			resolveContexts = Array(i),
-			    resolveValues = slice.call(arguments),
+			    resolveValues = _slice.call(arguments),
 
 
 			// the master Deferred
@@ -3669,10 +3970,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 			// subordinate callback factory
-			updateFunc = function (i) {
+			updateFunc = function updateFunc(i) {
 				return function (value) {
 					resolveContexts[i] = this;
-					resolveValues[i] = arguments.length > 1 ? slice.call(arguments) : value;
+					resolveValues[i] = arguments.length > 1 ? _slice.call(arguments) : value;
 					if (! --remaining) {
 						master.resolveWith(resolveContexts, resolveValues);
 					}
@@ -3745,7 +4046,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		readyWait: 1,
 
 		// Handle when the DOM is ready
-		ready: function (wait) {
+		ready: function ready(wait) {
 
 			// Abort if there are pending holds or we're already ready
 			if (wait === true ? --jQuery.readyWait : jQuery.isReady) {
@@ -3793,7 +4094,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	// Multifunctional method to get and set values of a collection
 	// The value/s can optionally be executed if it's a function
-	var access = function (elems, fn, key, value, chainable, emptyGet, raw) {
+	var access = function access(elems, fn, key, value, chainable, emptyGet, raw) {
 		var i = 0,
 		    len = elems.length,
 		    bulk = key == null;
@@ -3823,7 +4124,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					// ...except when executing function values
 				} else {
 					bulk = fn;
-					fn = function (elem, key, value) {
+					fn = function fn(elem, key, value) {
 						return bulk.call(jQuery(elem), value);
 					};
 				}
@@ -3863,7 +4164,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	function camelCase(string) {
 		return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
 	}
-	var acceptData = function (owner) {
+	var acceptData = function acceptData(owner) {
 
 		// Accepts only:
 		//  - Node
@@ -3882,7 +4183,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	Data.prototype = {
 
-		cache: function (owner) {
+		cache: function cache(owner) {
 
 			// Check if the owner object already has a cache
 			var value = owner[this.expando];
@@ -3915,7 +4216,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 			return value;
 		},
-		set: function (owner, data, value) {
+		set: function set(owner, data, value) {
 			var prop,
 			    cache = this.cache(owner);
 
@@ -3934,13 +4235,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}
 			return cache;
 		},
-		get: function (owner, key) {
+		get: function get(owner, key) {
 			return key === undefined ? this.cache(owner) :
 
 			// Always use camelCase key (gh-2257)
 			owner[this.expando] && owner[this.expando][camelCase(key)];
 		},
-		access: function (owner, key, value) {
+		access: function access(owner, key, value) {
 
 			// In cases where either:
 			//
@@ -3970,7 +4271,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			// return the expected data based on which path was taken[*]
 			return value !== undefined ? value : key;
 		},
-		remove: function (owner, key) {
+		remove: function remove(owner, key) {
 			var i,
 			    cache = owner[this.expando];
 
@@ -4015,7 +4316,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				}
 			}
 		},
-		hasData: function (owner) {
+		hasData: function hasData(owner) {
 			var cache = owner[this.expando];
 			return cache !== undefined && !jQuery.isEmptyObject(cache);
 		}
@@ -4086,31 +4387,31 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	}
 
 	jQuery.extend({
-		hasData: function (elem) {
+		hasData: function hasData(elem) {
 			return dataUser.hasData(elem) || dataPriv.hasData(elem);
 		},
 
-		data: function (elem, name, data) {
-			return dataUser.access(elem, name, data);
+		data: function data(elem, name, _data) {
+			return dataUser.access(elem, name, _data);
 		},
 
-		removeData: function (elem, name) {
+		removeData: function removeData(elem, name) {
 			dataUser.remove(elem, name);
 		},
 
 		// TODO: Now that all calls to _data and _removeData have been replaced
 		// with direct calls to dataPriv methods, these can be deprecated.
-		_data: function (elem, name, data) {
+		_data: function _data(elem, name, data) {
 			return dataPriv.access(elem, name, data);
 		},
 
-		_removeData: function (elem, name) {
+		_removeData: function _removeData(elem, name) {
 			dataPriv.remove(elem, name);
 		}
 	});
 
 	jQuery.fn.extend({
-		data: function (key, value) {
+		data: function data(key, value) {
 			var i,
 			    name,
 			    data,
@@ -4144,7 +4445,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}
 
 			// Sets multiple values
-			if (typeof key === "object") {
+			if ((typeof key === "undefined" ? "undefined" : _typeof(key)) === "object") {
 				return this.each(function () {
 					dataUser.set(this, key);
 				});
@@ -4187,7 +4488,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}, null, value, arguments.length > 1, null, true);
 		},
 
-		removeData: function (key) {
+		removeData: function removeData(key) {
 			return this.each(function () {
 				dataUser.remove(this, key);
 			});
@@ -4195,7 +4496,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	});
 
 	jQuery.extend({
-		queue: function (elem, type, data) {
+		queue: function queue(elem, type, data) {
 			var queue;
 
 			if (elem) {
@@ -4214,14 +4515,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}
 		},
 
-		dequeue: function (elem, type) {
+		dequeue: function dequeue(elem, type) {
 			type = type || "fx";
 
 			var queue = jQuery.queue(elem, type),
 			    startLength = queue.length,
 			    fn = queue.shift(),
 			    hooks = jQuery._queueHooks(elem, type),
-			    next = function () {
+			    next = function next() {
 				jQuery.dequeue(elem, type);
 			};
 
@@ -4250,7 +4551,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		},
 
 		// Not public - generate a queueHooks object, or return the current one
-		_queueHooks: function (elem, type) {
+		_queueHooks: function _queueHooks(elem, type) {
 			var key = type + "queueHooks";
 			return dataPriv.get(elem, key) || dataPriv.access(elem, key, {
 				empty: jQuery.Callbacks("once memory").add(function () {
@@ -4261,7 +4562,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	});
 
 	jQuery.fn.extend({
-		queue: function (type, data) {
+		queue: function queue(type, data) {
 			var setter = 2;
 
 			if (typeof type !== "string") {
@@ -4285,24 +4586,24 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				}
 			});
 		},
-		dequeue: function (type) {
+		dequeue: function dequeue(type) {
 			return this.each(function () {
 				jQuery.dequeue(this, type);
 			});
 		},
-		clearQueue: function (type) {
+		clearQueue: function clearQueue(type) {
 			return this.queue(type || "fx", []);
 		},
 
 		// Get a promise resolved when queues of a certain type
 		// are emptied (fx is the type by default)
-		promise: function (type, obj) {
+		promise: function promise(type, obj) {
 			var tmp,
 			    count = 1,
 			    defer = jQuery.Deferred(),
 			    elements = this,
 			    i = this.length,
-			    resolve = function () {
+			    resolve = function resolve() {
 				if (! --count) {
 					defer.resolveWith(elements, [elements]);
 				}
@@ -4331,7 +4632,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	var cssExpand = ["Top", "Right", "Bottom", "Left"];
 
-	var isHiddenWithinTree = function (elem, el) {
+	var isHiddenWithinTree = function isHiddenWithinTree(elem, el) {
 
 		// isHiddenWithinTree might be called from jQuery#filter function;
 		// in that case, element will be second argument
@@ -4347,7 +4648,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		jQuery.contains(elem.ownerDocument, elem) && jQuery.css(elem, "display") === "none";
 	};
 
-	var swap = function (elem, options, callback, args) {
+	var swap = function swap(elem, options, callback, args) {
 		var ret,
 		    name,
 		    old = {};
@@ -4503,13 +4804,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	}
 
 	jQuery.fn.extend({
-		show: function () {
+		show: function show() {
 			return showHide(this, true);
 		},
-		hide: function () {
+		hide: function hide() {
 			return showHide(this);
 		},
-		toggle: function (state) {
+		toggle: function toggle(state) {
 			if (typeof state === "boolean") {
 				return state ? this.show() : this.hide();
 			}
@@ -4725,11 +5026,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		} catch (err) {}
 	}
 
-	function on(elem, types, selector, data, fn, one) {
+	function _on(elem, types, selector, data, fn, one) {
 		var origFn, type;
 
 		// Types can be a map of types/handlers
-		if (typeof types === "object") {
+		if ((typeof types === "undefined" ? "undefined" : _typeof(types)) === "object") {
 
 			// ( types-Object, selector, data )
 			if (typeof selector !== "string") {
@@ -4739,7 +5040,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				selector = undefined;
 			}
 			for (type in types) {
-				on(elem, type, selector, data, types[type], one);
+				_on(elem, type, selector, data, types[type], one);
 			}
 			return elem;
 		}
@@ -4771,7 +5072,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		if (one === 1) {
 			origFn = fn;
-			fn = function (event) {
+			fn = function fn(event) {
 
 				// Can use an empty set, since event contains the info
 				jQuery().off(event);
@@ -4794,7 +5095,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		global: {},
 
-		add: function (elem, types, handler, data, selector) {
+		add: function add(elem, types, handler, data, selector) {
 
 			var handleObjIn,
 			    eventHandle,
@@ -4914,7 +5215,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		},
 
 		// Detach an event or set of events from an element
-		remove: function (elem, types, handler, selector, mappedTypes) {
+		remove: function remove(elem, types, handler, selector, mappedTypes) {
 
 			var j,
 			    origCount,
@@ -4989,7 +5290,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}
 		},
 
-		dispatch: function (nativeEvent) {
+		dispatch: function dispatch(nativeEvent) {
 
 			// Make a writable jQuery.Event from the native event object
 			var event = jQuery.event.fix(nativeEvent);
@@ -5056,14 +5357,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return event.result;
 		},
 
-		handlers: function (event, handlers) {
+		handlers: function handlers(event, _handlers) {
 			var i,
 			    handleObj,
 			    sel,
 			    matchedHandlers,
 			    matchedSelectors,
 			    handlerQueue = [],
-			    delegateCount = handlers.delegateCount,
+			    delegateCount = _handlers.delegateCount,
 			    cur = event.target;
 
 			// Find delegate handlers
@@ -5088,7 +5389,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 						matchedHandlers = [];
 						matchedSelectors = {};
 						for (i = 0; i < delegateCount; i++) {
-							handleObj = handlers[i];
+							handleObj = _handlers[i];
 
 							// Don't conflict with Object.prototype properties (#13203)
 							sel = handleObj.selector + " ";
@@ -5109,14 +5410,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 			// Add the remaining (directly-bound) handlers
 			cur = this;
-			if (delegateCount < handlers.length) {
-				handlerQueue.push({ elem: cur, handlers: handlers.slice(delegateCount) });
+			if (delegateCount < _handlers.length) {
+				handlerQueue.push({ elem: cur, handlers: _handlers.slice(delegateCount) });
 			}
 
 			return handlerQueue;
 		},
 
-		addProp: function (name, hook) {
+		addProp: function addProp(name, hook) {
 			Object.defineProperty(jQuery.Event.prototype, name, {
 				enumerable: true,
 				configurable: true,
@@ -5131,7 +5432,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					}
 				},
 
-				set: function (value) {
+				set: function set(value) {
 					Object.defineProperty(this, name, {
 						enumerable: true,
 						configurable: true,
@@ -5142,7 +5443,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		fix: function (originalEvent) {
+		fix: function fix(originalEvent) {
 			return originalEvent[jQuery.expando] ? originalEvent : new jQuery.Event(originalEvent);
 		},
 
@@ -5155,7 +5456,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			focus: {
 
 				// Fire native event if possible so blur/focus sequence is correct
-				trigger: function () {
+				trigger: function trigger() {
 					if (this !== safeActiveElement() && this.focus) {
 						this.focus();
 						return false;
@@ -5164,7 +5465,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				delegateType: "focusin"
 			},
 			blur: {
-				trigger: function () {
+				trigger: function trigger() {
 					if (this === safeActiveElement() && this.blur) {
 						this.blur();
 						return false;
@@ -5175,7 +5476,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			click: {
 
 				// For checkbox, fire native event so checked state will be right
-				trigger: function () {
+				trigger: function trigger() {
 					if (this.type === "checkbox" && this.click && nodeName(this, "input")) {
 						this.click();
 						return false;
@@ -5183,13 +5484,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				},
 
 				// For cross-browser consistency, don't fire native .click() on links
-				_default: function (event) {
+				_default: function _default(event) {
 					return nodeName(event.target, "a");
 				}
 			},
 
 			beforeunload: {
-				postDispatch: function (event) {
+				postDispatch: function postDispatch(event) {
 
 					// Support: Firefox 20+
 					// Firefox doesn't alert if the returnValue field is not set.
@@ -5262,7 +5563,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		isImmediatePropagationStopped: returnFalse,
 		isSimulated: false,
 
-		preventDefault: function () {
+		preventDefault: function preventDefault() {
 			var e = this.originalEvent;
 
 			this.isDefaultPrevented = returnTrue;
@@ -5271,7 +5572,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				e.preventDefault();
 			}
 		},
-		stopPropagation: function () {
+		stopPropagation: function stopPropagation() {
 			var e = this.originalEvent;
 
 			this.isPropagationStopped = returnTrue;
@@ -5280,7 +5581,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				e.stopPropagation();
 			}
 		},
-		stopImmediatePropagation: function () {
+		stopImmediatePropagation: function stopImmediatePropagation() {
 			var e = this.originalEvent;
 
 			this.isImmediatePropagationStopped = returnTrue;
@@ -5325,7 +5626,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		toElement: true,
 		touches: true,
 
-		which: function (event) {
+		which: function which(event) {
 			var button = event.button;
 
 			// Add which for key events
@@ -5372,7 +5673,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			delegateType: fix,
 			bindType: fix,
 
-			handle: function (event) {
+			handle: function handle(event) {
 				var ret,
 				    target = this,
 				    related = event.relatedTarget,
@@ -5392,13 +5693,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	jQuery.fn.extend({
 
-		on: function (types, selector, data, fn) {
-			return on(this, types, selector, data, fn);
+		on: function on(types, selector, data, fn) {
+			return _on(this, types, selector, data, fn);
 		},
-		one: function (types, selector, data, fn) {
-			return on(this, types, selector, data, fn, 1);
+		one: function one(types, selector, data, fn) {
+			return _on(this, types, selector, data, fn, 1);
 		},
-		off: function (types, selector, fn) {
+		off: function off(types, selector, fn) {
 			var handleObj, type;
 			if (types && types.preventDefault && types.handleObj) {
 
@@ -5407,7 +5708,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				jQuery(types.delegateTarget).off(handleObj.namespace ? handleObj.origType + "." + handleObj.namespace : handleObj.origType, handleObj.selector, handleObj.handler);
 				return this;
 			}
-			if (typeof types === "object") {
+			if ((typeof types === "undefined" ? "undefined" : _typeof(types)) === "object") {
 
 				// ( types-object [, selector] )
 				for (type in types) {
@@ -5614,7 +5915,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		return collection;
 	}
 
-	function remove(elem, selector, keepData) {
+	function _remove(elem, selector, keepData) {
 		var node,
 		    nodes = selector ? jQuery.filter(selector, elem) : elem,
 		    i = 0;
@@ -5636,11 +5937,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	}
 
 	jQuery.extend({
-		htmlPrefilter: function (html) {
+		htmlPrefilter: function htmlPrefilter(html) {
 			return html.replace(rxhtmlTag, "<$1></$2>");
 		},
 
-		clone: function (elem, dataAndEvents, deepDataAndEvents) {
+		clone: function clone(elem, dataAndEvents, deepDataAndEvents) {
 			var i,
 			    l,
 			    srcElements,
@@ -5684,7 +5985,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return clone;
 		},
 
-		cleanData: function (elems) {
+		cleanData: function cleanData(elems) {
 			var data,
 			    elem,
 			    type,
@@ -5722,15 +6023,15 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	});
 
 	jQuery.fn.extend({
-		detach: function (selector) {
-			return remove(this, selector, true);
+		detach: function detach(selector) {
+			return _remove(this, selector, true);
 		},
 
-		remove: function (selector) {
-			return remove(this, selector);
+		remove: function remove(selector) {
+			return _remove(this, selector);
 		},
 
-		text: function (value) {
+		text: function text(value) {
 			return access(this, function (value) {
 				return value === undefined ? jQuery.text(this) : this.empty().each(function () {
 					if (this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9) {
@@ -5740,7 +6041,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}, null, value, arguments.length);
 		},
 
-		append: function () {
+		append: function append() {
 			return domManip(this, arguments, function (elem) {
 				if (this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9) {
 					var target = manipulationTarget(this, elem);
@@ -5749,7 +6050,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		prepend: function () {
+		prepend: function prepend() {
 			return domManip(this, arguments, function (elem) {
 				if (this.nodeType === 1 || this.nodeType === 11 || this.nodeType === 9) {
 					var target = manipulationTarget(this, elem);
@@ -5758,7 +6059,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		before: function () {
+		before: function before() {
 			return domManip(this, arguments, function (elem) {
 				if (this.parentNode) {
 					this.parentNode.insertBefore(elem, this);
@@ -5766,7 +6067,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		after: function () {
+		after: function after() {
 			return domManip(this, arguments, function (elem) {
 				if (this.parentNode) {
 					this.parentNode.insertBefore(elem, this.nextSibling);
@@ -5774,7 +6075,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		empty: function () {
+		empty: function empty() {
 			var elem,
 			    i = 0;
 
@@ -5792,7 +6093,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return this;
 		},
 
-		clone: function (dataAndEvents, deepDataAndEvents) {
+		clone: function clone(dataAndEvents, deepDataAndEvents) {
 			dataAndEvents = dataAndEvents == null ? false : dataAndEvents;
 			deepDataAndEvents = deepDataAndEvents == null ? dataAndEvents : deepDataAndEvents;
 
@@ -5801,7 +6102,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		html: function (value) {
+		html: function html(value) {
 			return access(this, function (value) {
 				var elem = this[0] || {},
 				    i = 0,
@@ -5839,7 +6140,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}, null, value, arguments.length);
 		},
 
-		replaceWith: function () {
+		replaceWith: function replaceWith() {
 			var ignored = [];
 
 			// Make the changes, replacing each non-ignored context element with the new content
@@ -5886,7 +6187,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	});
 	var rnumnonpx = new RegExp("^(" + pnum + ")(?!px)[a-z%]+$", "i");
 
-	var getStyles = function (elem) {
+	var getStyles = function getStyles(elem) {
 
 		// Support: IE <=11 only, Firefox <=30 (#15098, #14150)
 		// IE throws on elements created in popups
@@ -5968,23 +6269,23 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		support.clearCloneStyle = div.style.backgroundClip === "content-box";
 
 		jQuery.extend(support, {
-			boxSizingReliable: function () {
+			boxSizingReliable: function boxSizingReliable() {
 				computeStyleTests();
 				return boxSizingReliableVal;
 			},
-			pixelBoxStyles: function () {
+			pixelBoxStyles: function pixelBoxStyles() {
 				computeStyleTests();
 				return pixelBoxStylesVal;
 			},
-			pixelPosition: function () {
+			pixelPosition: function pixelPosition() {
 				computeStyleTests();
 				return pixelPositionVal;
 			},
-			reliableMarginLeft: function () {
+			reliableMarginLeft: function reliableMarginLeft() {
 				computeStyleTests();
 				return reliableMarginLeftVal;
 			},
-			scrollboxSize: function () {
+			scrollboxSize: function scrollboxSize() {
 				computeStyleTests();
 				return scrollboxSizeVal;
 			}
@@ -6050,7 +6351,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		// Define the hook, we'll check on the first run if it's really needed.
 		return {
-			get: function () {
+			get: function get() {
 				if (conditionFn()) {
 
 					// Hook not needed (or it's not possible to use it due
@@ -6229,7 +6530,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		// behavior of getting and setting a style property
 		cssHooks: {
 			opacity: {
-				get: function (elem, computed) {
+				get: function get(elem, computed) {
 					if (computed) {
 
 						// We should always get a number back from opacity
@@ -6262,7 +6563,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		cssProps: {},
 
 		// Get and set the style property on a DOM Node
-		style: function (elem, name, value, extra) {
+		style: function style(elem, name, value, extra) {
 
 			// Don't set styles on text and comment nodes
 			if (!elem || elem.nodeType === 3 || elem.nodeType === 8 || !elem.style) {
@@ -6289,7 +6590,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 			// Check if we're setting a value
 			if (value !== undefined) {
-				type = typeof value;
+				type = typeof value === "undefined" ? "undefined" : _typeof(value);
 
 				// Convert "+=" or "-=" to relative numbers (#7345)
 				if (type === "string" && (ret = rcssNum.exec(value)) && ret[1]) {
@@ -6336,7 +6637,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}
 		},
 
-		css: function (elem, name, extra, styles) {
+		css: function css(elem, name, extra, styles) {
 			var val,
 			    num,
 			    hooks,
@@ -6380,7 +6681,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	jQuery.each(["height", "width"], function (i, dimension) {
 		jQuery.cssHooks[dimension] = {
-			get: function (elem, computed, extra) {
+			get: function get(elem, computed, extra) {
 				if (computed) {
 
 					// Certain elements can have dimension info if we invisibly show them
@@ -6399,7 +6700,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				}
 			},
 
-			set: function (elem, value, extra) {
+			set: function set(elem, value, extra) {
 				var matches,
 				    styles = getStyles(elem),
 				    isBorderBox = jQuery.css(elem, "boxSizing", false, styles) === "border-box",
@@ -6438,7 +6739,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		border: "Width"
 	}, function (prefix, suffix) {
 		jQuery.cssHooks[prefix + suffix] = {
-			expand: function (value) {
+			expand: function expand(value) {
 				var i = 0,
 				    expanded = {},
 
@@ -6460,7 +6761,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	});
 
 	jQuery.fn.extend({
-		css: function (name, value) {
+		css: function css(name, value) {
 			return access(this, function (elem, name, value) {
 				var styles,
 				    len,
@@ -6490,7 +6791,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	Tween.prototype = {
 		constructor: Tween,
-		init: function (elem, options, prop, end, easing, unit) {
+		init: function init(elem, options, prop, end, easing, unit) {
 			this.elem = elem;
 			this.prop = prop;
 			this.easing = easing || jQuery.easing._default;
@@ -6499,12 +6800,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			this.end = end;
 			this.unit = unit || (jQuery.cssNumber[prop] ? "" : "px");
 		},
-		cur: function () {
+		cur: function cur() {
 			var hooks = Tween.propHooks[this.prop];
 
 			return hooks && hooks.get ? hooks.get(this) : Tween.propHooks._default.get(this);
 		},
-		run: function (percent) {
+		run: function run(percent) {
 			var eased,
 			    hooks = Tween.propHooks[this.prop];
 
@@ -6532,7 +6833,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	Tween.propHooks = {
 		_default: {
-			get: function (tween) {
+			get: function get(tween) {
 				var result;
 
 				// Use a property on the element directly when it is not a DOM element,
@@ -6550,7 +6851,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				// Empty strings, null, undefined and "auto" are converted to 0.
 				return !result || result === "auto" ? 0 : result;
 			},
-			set: function (tween) {
+			set: function set(tween) {
 
 				// Use step hook for back compat.
 				// Use cssHook if its there.
@@ -6569,7 +6870,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	// Support: IE <=9 only
 	// Panic based approach to setting things on disconnected nodes
 	Tween.propHooks.scrollTop = Tween.propHooks.scrollLeft = {
-		set: function (tween) {
+		set: function set(tween) {
 			if (tween.elem.nodeType && tween.elem.parentNode) {
 				tween.elem[tween.prop] = tween.now;
 			}
@@ -6577,10 +6878,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	};
 
 	jQuery.easing = {
-		linear: function (p) {
+		linear: function linear(p) {
 			return p;
 		},
-		swing: function (p) {
+		swing: function swing(p) {
 			return 0.5 - Math.cos(p * Math.PI) / 2;
 		},
 		_default: "swing"
@@ -6877,7 +7178,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			// Don't match elem in the :animated selector
 			delete tick.elem;
 		}),
-		    tick = function () {
+		    tick = function tick() {
 			if (stopped) {
 				return false;
 			}
@@ -6924,12 +7225,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			startTime: fxNow || createFxNow(),
 			duration: options.duration,
 			tweens: [],
-			createTween: function (prop, end) {
+			createTween: function createTween(prop, end) {
 				var tween = jQuery.Tween(elem, animation.opts, prop, end, animation.opts.specialEasing[prop] || animation.opts.easing);
 				animation.tweens.push(tween);
 				return tween;
 			},
-			stop: function (gotoEnd) {
+			stop: function stop(gotoEnd) {
 				var index = 0,
 
 
@@ -6996,7 +7297,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}]
 		},
 
-		tweener: function (props, callback) {
+		tweener: function tweener(props, callback) {
 			if (isFunction(props)) {
 				callback = props;
 				props = ["*"];
@@ -7017,7 +7318,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		prefilters: [defaultPrefilter],
 
-		prefilter: function (callback, prepend) {
+		prefilter: function prefilter(callback, prepend) {
 			if (prepend) {
 				Animation.prefilters.unshift(callback);
 			} else {
@@ -7027,7 +7328,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	});
 
 	jQuery.speed = function (speed, easing, fn) {
-		var opt = speed && typeof speed === "object" ? jQuery.extend({}, speed) : {
+		var opt = speed && (typeof speed === "undefined" ? "undefined" : _typeof(speed)) === "object" ? jQuery.extend({}, speed) : {
 			complete: fn || !fn && easing || isFunction(speed) && speed,
 			duration: speed,
 			easing: fn && easing || easing && !isFunction(easing) && easing
@@ -7068,7 +7369,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	};
 
 	jQuery.fn.extend({
-		fadeTo: function (speed, to, easing, callback) {
+		fadeTo: function fadeTo(speed, to, easing, callback) {
 
 			// Show any hidden elements after setting opacity to 0
 			return this.filter(isHiddenWithinTree).css("opacity", 0).show()
@@ -7076,10 +7377,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			// Animate to the value specified
 			.end().animate({ opacity: to }, speed, easing, callback);
 		},
-		animate: function (prop, speed, easing, callback) {
+		animate: function animate(prop, speed, easing, callback) {
 			var empty = jQuery.isEmptyObject(prop),
 			    optall = jQuery.speed(speed, easing, callback),
-			    doAnimation = function () {
+			    doAnimation = function doAnimation() {
 
 				// Operate on a copy of prop so per-property easing won't be lost
 				var anim = Animation(this, jQuery.extend({}, prop), optall);
@@ -7093,8 +7394,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 			return empty || optall.queue === false ? this.each(doAnimation) : this.queue(optall.queue, doAnimation);
 		},
-		stop: function (type, clearQueue, gotoEnd) {
-			var stopQueue = function (hooks) {
+		stop: function stop(type, clearQueue, gotoEnd) {
+			var stopQueue = function stopQueue(hooks) {
 				var stop = hooks.stop;
 				delete hooks.stop;
 				stop(gotoEnd);
@@ -7144,7 +7445,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				}
 			});
 		},
-		finish: function (type) {
+		finish: function finish(type) {
 			if (type !== false) {
 				type = type || "fx";
 			}
@@ -7299,11 +7600,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	    attrHandle = jQuery.expr.attrHandle;
 
 	jQuery.fn.extend({
-		attr: function (name, value) {
+		attr: function attr(name, value) {
 			return access(this, jQuery.attr, name, value, arguments.length > 1);
 		},
 
-		removeAttr: function (name) {
+		removeAttr: function removeAttr(name) {
 			return this.each(function () {
 				jQuery.removeAttr(this, name);
 			});
@@ -7311,7 +7612,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	});
 
 	jQuery.extend({
-		attr: function (elem, name, value) {
+		attr: function attr(elem, name, value) {
 			var ret,
 			    hooks,
 			    nType = elem.nodeType;
@@ -7358,7 +7659,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		attrHooks: {
 			type: {
-				set: function (elem, value) {
+				set: function set(elem, value) {
 					if (!support.radioValue && value === "radio" && nodeName(elem, "input")) {
 						var val = elem.value;
 						elem.setAttribute("type", value);
@@ -7371,7 +7672,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			}
 		},
 
-		removeAttr: function (elem, value) {
+		removeAttr: function removeAttr(elem, value) {
 			var name,
 			    i = 0,
 
@@ -7390,7 +7691,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	// Hooks for boolean attributes
 	boolHook = {
-		set: function (elem, value, name) {
+		set: function set(elem, value, name) {
 			if (value === false) {
 
 				// Remove boolean attributes when set to false
@@ -7426,11 +7727,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	    rclickable = /^(?:a|area)$/i;
 
 	jQuery.fn.extend({
-		prop: function (name, value) {
+		prop: function prop(name, value) {
 			return access(this, jQuery.prop, name, value, arguments.length > 1);
 		},
 
-		removeProp: function (name) {
+		removeProp: function removeProp(name) {
 			return this.each(function () {
 				delete this[jQuery.propFix[name] || name];
 			});
@@ -7438,7 +7739,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	});
 
 	jQuery.extend({
-		prop: function (elem, name, value) {
+		prop: function prop(elem, name, value) {
 			var ret,
 			    hooks,
 			    nType = elem.nodeType;
@@ -7472,7 +7773,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		propHooks: {
 			tabIndex: {
-				get: function (elem) {
+				get: function get(elem) {
 
 					// Support: IE <=9 - 11 only
 					// elem.tabIndex doesn't always return the
@@ -7510,7 +7811,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	// since it considers such accessions noop
 	if (!support.optSelected) {
 		jQuery.propHooks.selected = {
-			get: function (elem) {
+			get: function get(elem) {
 
 				/* eslint no-unused-expressions: "off" */
 
@@ -7520,7 +7821,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				}
 				return null;
 			},
-			set: function (elem) {
+			set: function set(elem) {
 
 				/* eslint no-unused-expressions: "off" */
 
@@ -7562,7 +7863,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	}
 
 	jQuery.fn.extend({
-		addClass: function (value) {
+		addClass: function addClass(value) {
 			var classes,
 			    elem,
 			    cur,
@@ -7605,7 +7906,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return this;
 		},
 
-		removeClass: function (value) {
+		removeClass: function removeClass(value) {
 			var classes,
 			    elem,
 			    cur,
@@ -7656,8 +7957,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return this;
 		},
 
-		toggleClass: function (value, stateVal) {
-			var type = typeof value,
+		toggleClass: function toggleClass(value, stateVal) {
+			var type = typeof value === "undefined" ? "undefined" : _typeof(value),
 			    isValidValue = type === "string" || Array.isArray(value);
 
 			if (typeof stateVal === "boolean" && isValidValue) {
@@ -7710,7 +8011,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		hasClass: function (selector) {
+		hasClass: function hasClass(selector) {
 			var className,
 			    elem,
 			    i = 0;
@@ -7729,7 +8030,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	var rreturn = /\r/g;
 
 	jQuery.fn.extend({
-		val: function (value) {
+		val: function val(value) {
 			var hooks,
 			    ret,
 			    valueIsFunction,
@@ -7796,7 +8097,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	jQuery.extend({
 		valHooks: {
 			option: {
-				get: function (elem) {
+				get: function get(elem) {
 
 					var val = jQuery.find.attr(elem, "value");
 					return val != null ? val :
@@ -7809,7 +8110,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				}
 			},
 			select: {
-				get: function (elem) {
+				get: function get(elem) {
 					var value,
 					    option,
 					    i,
@@ -7852,7 +8153,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					return values;
 				},
 
-				set: function (elem, value) {
+				set: function set(elem, value) {
 					var optionSet,
 					    option,
 					    options = elem.options,
@@ -7884,7 +8185,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	// Radios and checkboxes getter/setter
 	jQuery.each(["radio", "checkbox"], function () {
 		jQuery.valHooks[this] = {
-			set: function (elem, value) {
+			set: function set(elem, value) {
 				if (Array.isArray(value)) {
 					return elem.checked = jQuery.inArray(jQuery(elem).val(), value) > -1;
 				}
@@ -7903,13 +8204,13 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	support.focusin = "onfocusin" in window;
 
 	var rfocusMorph = /^(?:focusinfocus|focusoutblur)$/,
-	    stopPropagationCallback = function (e) {
+	    stopPropagationCallback = function stopPropagationCallback(e) {
 		e.stopPropagation();
 	};
 
 	jQuery.extend(jQuery.event, {
 
-		trigger: function (event, data, elem, onlyHandlers) {
+		trigger: function trigger(event, data, elem, onlyHandlers) {
 
 			var i,
 			    cur,
@@ -7945,7 +8246,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			ontype = type.indexOf(":") < 0 && "on" + type;
 
 			// Caller can pass in a jQuery.Event object, Object, or just an event type string
-			event = event[jQuery.expando] ? event : new jQuery.Event(type, typeof event === "object" && event);
+			event = event[jQuery.expando] ? event : new jQuery.Event(type, (typeof event === "undefined" ? "undefined" : _typeof(event)) === "object" && event);
 
 			// Trigger bitmask: & 1 for native handlers; & 2 for jQuery (always true)
 			event.isTrigger = onlyHandlers ? 2 : 3;
@@ -8052,7 +8353,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		// Piggyback on a donor event to simulate a different one
 		// Used only for `focus(in | out)` events
-		simulate: function (type, elem, event) {
+		simulate: function simulate(type, elem, event) {
 			var e = jQuery.extend(new jQuery.Event(), event, {
 				type: type,
 				isSimulated: true
@@ -8065,12 +8366,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	jQuery.fn.extend({
 
-		trigger: function (type, data) {
+		trigger: function trigger(type, data) {
 			return this.each(function () {
 				jQuery.event.trigger(type, data, this);
 			});
 		},
-		triggerHandler: function (type, data) {
+		triggerHandler: function triggerHandler(type, data) {
 			var elem = this[0];
 			if (elem) {
 				return jQuery.event.trigger(type, data, elem, true);
@@ -8090,12 +8391,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		jQuery.each({ focus: "focusin", blur: "focusout" }, function (orig, fix) {
 
 			// Attach a single capturing handler on the document while someone wants focusin/focusout
-			var handler = function (event) {
+			var handler = function handler(event) {
 				jQuery.event.simulate(fix, event.target, jQuery.event.fix(event));
 			};
 
 			jQuery.event.special[fix] = {
-				setup: function () {
+				setup: function setup() {
 					var doc = this.ownerDocument || this,
 					    attaches = dataPriv.access(doc, fix);
 
@@ -8104,7 +8405,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					}
 					dataPriv.access(doc, fix, (attaches || 0) + 1);
 				},
-				teardown: function () {
+				teardown: function teardown() {
 					var doc = this.ownerDocument || this,
 					    attaches = dataPriv.access(doc, fix) - 1;
 
@@ -8164,7 +8465,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				} else {
 
 					// Item is non-scalar (array or object), encode its numeric index.
-					buildParams(prefix + "[" + (typeof v === "object" && v != null ? i : "") + "]", v, traditional, add);
+					buildParams(prefix + "[" + ((typeof v === "undefined" ? "undefined" : _typeof(v)) === "object" && v != null ? i : "") + "]", v, traditional, add);
 				}
 			});
 		} else if (!traditional && toType(obj) === "object") {
@@ -8185,7 +8486,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	jQuery.param = function (a, traditional) {
 		var prefix,
 		    s = [],
-		    add = function (key, valueOrFunction) {
+		    add = function add(key, valueOrFunction) {
 
 			// If value is a function, invoke it and use its return value
 			var value = isFunction(valueOrFunction) ? valueOrFunction() : valueOrFunction;
@@ -8214,10 +8515,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	};
 
 	jQuery.fn.extend({
-		serialize: function () {
+		serialize: function serialize() {
 			return jQuery.param(this.serializeArray());
 		},
-		serializeArray: function () {
+		serializeArray: function serializeArray() {
 			return this.map(function () {
 
 				// Can add propHook for "elements" to filter or add form elements
@@ -8611,7 +8912,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		// Creates a full fledged settings object into target
 		// with both ajaxSettings and settings fields.
 		// If target is omitted, writes into ajaxSettings.
-		ajaxSetup: function (target, settings) {
+		ajaxSetup: function ajaxSetup(target, settings) {
 			return settings ?
 
 			// Building a settings object
@@ -8625,10 +8926,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		ajaxTransport: addToPrefiltersOrTransports(transports),
 
 		// Main method
-		ajax: function (url, options) {
+		ajax: function ajax(url, options) {
 
 			// If url is an object, simulate pre-1.5 signature
-			if (typeof url === "object") {
+			if ((typeof url === "undefined" ? "undefined" : _typeof(url)) === "object") {
 				options = url;
 				url = undefined;
 			}
@@ -8690,7 +8991,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 
 			// Status-dependent callbacks
-			statusCode = s.statusCode || {},
+			_statusCode = s.statusCode || {},
 
 
 			// Headers (they are sent all at once)
@@ -8707,7 +9008,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				readyState: 0,
 
 				// Builds headers hashtable if needed
-				getResponseHeader: function (key) {
+				getResponseHeader: function getResponseHeader(key) {
 					var match;
 					if (completed) {
 						if (!responseHeaders) {
@@ -8722,12 +9023,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				},
 
 				// Raw string
-				getAllResponseHeaders: function () {
+				getAllResponseHeaders: function getAllResponseHeaders() {
 					return completed ? responseHeadersString : null;
 				},
 
 				// Caches the header
-				setRequestHeader: function (name, value) {
+				setRequestHeader: function setRequestHeader(name, value) {
 					if (completed == null) {
 						name = requestHeadersNames[name.toLowerCase()] = requestHeadersNames[name.toLowerCase()] || name;
 						requestHeaders[name] = value;
@@ -8736,7 +9037,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				},
 
 				// Overrides response content-type header
-				overrideMimeType: function (type) {
+				overrideMimeType: function overrideMimeType(type) {
 					if (completed == null) {
 						s.mimeType = type;
 					}
@@ -8744,7 +9045,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				},
 
 				// Status-dependent callbacks
-				statusCode: function (map) {
+				statusCode: function statusCode(map) {
 					var code;
 					if (map) {
 						if (completed) {
@@ -8755,7 +9056,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 							// Lazy-add the new callbacks in a way that preserves old ones
 							for (code in map) {
-								statusCode[code] = [statusCode[code], map[code]];
+								_statusCode[code] = [_statusCode[code], map[code]];
 							}
 						}
 					}
@@ -8763,7 +9064,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				},
 
 				// Cancel the request
-				abort: function (statusText) {
+				abort: function abort(statusText) {
 					var finalText = statusText || strAbort;
 					if (transport) {
 						transport.abort(finalText);
@@ -9045,8 +9346,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 				}
 
 				// Status-dependent callbacks
-				jqXHR.statusCode(statusCode);
-				statusCode = undefined;
+				jqXHR.statusCode(_statusCode);
+				_statusCode = undefined;
 
 				if (fireGlobals) {
 					globalEventContext.trigger(isSuccess ? "ajaxSuccess" : "ajaxError", [jqXHR, s, isSuccess ? success : error]);
@@ -9068,11 +9369,11 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return jqXHR;
 		},
 
-		getJSON: function (url, data, callback) {
+		getJSON: function getJSON(url, data, callback) {
 			return jQuery.get(url, data, callback, "json");
 		},
 
-		getScript: function (url, callback) {
+		getScript: function getScript(url, callback) {
 			return jQuery.get(url, undefined, callback, "script");
 		}
 	});
@@ -9113,7 +9414,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	};
 
 	jQuery.fn.extend({
-		wrapAll: function (html) {
+		wrapAll: function wrapAll(html) {
 			var wrap;
 
 			if (this[0]) {
@@ -9142,7 +9443,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			return this;
 		},
 
-		wrapInner: function (html) {
+		wrapInner: function wrapInner(html) {
 			if (isFunction(html)) {
 				return this.each(function (i) {
 					jQuery(this).wrapInner(html.call(this, i));
@@ -9161,7 +9462,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		wrap: function (html) {
+		wrap: function wrap(html) {
 			var htmlIsFunction = isFunction(html);
 
 			return this.each(function (i) {
@@ -9169,7 +9470,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			});
 		},
 
-		unwrap: function (selector) {
+		unwrap: function unwrap(selector) {
 			this.parent(selector).not("body").each(function () {
 				jQuery(this).replaceWith(this.childNodes);
 			});
@@ -9205,12 +9506,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	support.ajax = xhrSupported = !!xhrSupported;
 
 	jQuery.ajaxTransport(function (options) {
-		var callback, errorCallback;
+		var _callback, errorCallback;
 
 		// Cross domain only allowed if supported through XMLHttpRequest
 		if (support.cors || xhrSupported && !options.crossDomain) {
 			return {
-				send: function (headers, complete) {
+				send: function send(headers, complete) {
 					var i,
 					    xhr = options.xhr();
 
@@ -9243,10 +9544,10 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					}
 
 					// Callback
-					callback = function (type) {
+					_callback = function callback(type) {
 						return function () {
-							if (callback) {
-								callback = errorCallback = xhr.onload = xhr.onerror = xhr.onabort = xhr.ontimeout = xhr.onreadystatechange = null;
+							if (_callback) {
+								_callback = errorCallback = xhr.onload = xhr.onerror = xhr.onabort = xhr.ontimeout = xhr.onreadystatechange = null;
 
 								if (type === "abort") {
 									xhr.abort();
@@ -9276,8 +9577,8 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					};
 
 					// Listen to events
-					xhr.onload = callback();
-					errorCallback = xhr.onerror = xhr.ontimeout = callback("error");
+					xhr.onload = _callback();
+					errorCallback = xhr.onerror = xhr.ontimeout = _callback("error");
 
 					// Support: IE 9 only
 					// Use onreadystatechange to replace onabort
@@ -9295,7 +9596,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 								// Also, save errorCallback to a variable
 								// as xhr.onerror cannot be accessed
 								window.setTimeout(function () {
-									if (callback) {
+									if (_callback) {
 										errorCallback();
 									}
 								});
@@ -9304,7 +9605,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					}
 
 					// Create the abort callback
-					callback = callback("abort");
+					_callback = _callback("abort");
 
 					try {
 
@@ -9313,15 +9614,15 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					} catch (e) {
 
 						// #14683: Only rethrow if this hasn't been notified as an error yet
-						if (callback) {
+						if (_callback) {
 							throw e;
 						}
 					}
 				},
 
-				abort: function () {
-					if (callback) {
-						callback();
+				abort: function abort() {
+					if (_callback) {
+						_callback();
 					}
 				}
 			};
@@ -9344,7 +9645,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			script: /\b(?:java|ecma)script\b/
 		},
 		converters: {
-			"text script": function (text) {
+			"text script": function textScript(text) {
 				jQuery.globalEval(text);
 				return text;
 			}
@@ -9366,15 +9667,15 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		// This transport only deals with cross domain requests
 		if (s.crossDomain) {
-			var script, callback;
+			var script, _callback2;
 			return {
-				send: function (_, complete) {
+				send: function send(_, complete) {
 					script = jQuery("<script>").prop({
 						charset: s.scriptCharset,
 						src: s.url
-					}).on("load error", callback = function (evt) {
+					}).on("load error", _callback2 = function callback(evt) {
 						script.remove();
-						callback = null;
+						_callback2 = null;
 						if (evt) {
 							complete(evt.type === "error" ? 404 : 200, evt.type);
 						}
@@ -9383,9 +9684,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 					// Use native DOM manipulation to avoid our domManip AJAX trickery
 					document.head.appendChild(script[0]);
 				},
-				abort: function () {
-					if (callback) {
-						callback();
+				abort: function abort() {
+					if (_callback2) {
+						_callback2();
 					}
 				}
 			};
@@ -9398,7 +9699,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	// Default jsonp settings
 	jQuery.ajaxSetup({
 		jsonp: "callback",
-		jsonpCallback: function () {
+		jsonpCallback: function jsonpCallback() {
 			var callback = oldCallbacks.pop() || jQuery.expando + "_" + nonce++;
 			this[callback] = true;
 			return callback;
@@ -9562,7 +9863,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 			params = undefined;
 
 			// Otherwise, build a param string
-		} else if (params && typeof params === "object") {
+		} else if (params && (typeof params === "undefined" ? "undefined" : _typeof(params)) === "object") {
 			type = "POST";
 		}
 
@@ -9618,7 +9919,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	};
 
 	jQuery.offset = {
-		setOffset: function (elem, options, i) {
+		setOffset: function setOffset(elem, options, i) {
 			var curPosition,
 			    curLeft,
 			    curCSSTop,
@@ -9675,7 +9976,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	jQuery.fn.extend({
 
 		// offset() relates an element's border box to the document origin
-		offset: function (options) {
+		offset: function offset(options) {
 
 			// Preserve chaining for setter
 			if (arguments.length) {
@@ -9711,7 +10012,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 		// position() relates an element's margin box to its offset parent's padding box
 		// This corresponds to the behavior of CSS absolute positioning
-		position: function () {
+		position: function position() {
 			if (!this[0]) {
 				return;
 			}
@@ -9764,7 +10065,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		// and might be considered as more preferable results.
 		//
 		// This logic, however, is not guaranteed and can change at any point in the future
-		offsetParent: function () {
+		offsetParent: function offsetParent() {
 			return this.map(function () {
 				var offsetParent = this.offsetParent;
 
@@ -9870,24 +10171,24 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 	});
 
 	jQuery.fn.extend({
-		hover: function (fnOver, fnOut) {
+		hover: function hover(fnOver, fnOut) {
 			return this.mouseenter(fnOver).mouseleave(fnOut || fnOver);
 		}
 	});
 
 	jQuery.fn.extend({
 
-		bind: function (types, data, fn) {
+		bind: function bind(types, data, fn) {
 			return this.on(types, null, data, fn);
 		},
-		unbind: function (types, fn) {
+		unbind: function unbind(types, fn) {
 			return this.off(types, null, fn);
 		},
 
-		delegate: function (selector, types, data, fn) {
+		delegate: function delegate(selector, types, data, fn) {
 			return this.on(types, selector, data, fn);
 		},
-		undelegate: function (selector, types, fn) {
+		undelegate: function undelegate(selector, types, fn) {
 
 			// ( namespace ) or ( selector, types [, fn] )
 			return arguments.length === 1 ? this.off(selector, "**") : this.off(types, selector || "**", fn);
@@ -9914,9 +10215,9 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 		}
 
 		// Simulated bind
-		args = slice.call(arguments, 2);
-		proxy = function () {
-			return fn.apply(context || this, args.concat(slice.call(arguments)));
+		args = _slice.call(arguments, 2);
+		proxy = function proxy() {
+			return fn.apply(context || this, args.concat(_slice.call(arguments)));
 		};
 
 		// Set the guid of unique handler to the same of original handler, so it can be removed
@@ -10006,12 +10307,14 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
 
 	return jQuery;
 });
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)(module)))
 
 /***/ }),
-/* 1 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-/* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
+"use strict";
+/* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;var _typeof=typeof Symbol==="function"&&typeof Symbol.iterator==="symbol"?function(obj){return typeof obj;}:function(obj){return obj&&typeof Symbol==="function"&&obj.constructor===Symbol&&obj!==Symbol.prototype?"symbol":typeof obj;};/**
  * @license
  * Lodash <https://lodash.com/>
  * Copyright JS Foundation and other contributors <https://js.foundation/>
@@ -10024,12 +10327,12 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
    */var reRegExpChar=/[\\^$.*+?()[\]{}|]/g,reHasRegExpChar=RegExp(reRegExpChar.source);/** Used to match leading and trailing whitespace. */var reTrim=/^\s+|\s+$/g,reTrimStart=/^\s+/,reTrimEnd=/\s+$/;/** Used to match wrap detail comments. */var reWrapComment=/\{(?:\n\/\* \[wrapped with .+\] \*\/)?\n?/,reWrapDetails=/\{\n\/\* \[wrapped with (.+)\] \*/,reSplitDetails=/,? & /;/** Used to match words composed of alphanumeric characters. */var reAsciiWord=/[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g;/** Used to match backslashes in property paths. */var reEscapeChar=/\\(\\)?/g;/**
    * Used to match
    * [ES template delimiters](http://ecma-international.org/ecma-262/7.0/#sec-template-literal-lexical-components).
-   */var reEsTemplate=/\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g;/** Used to match `RegExp` flags from their coerced string values. */var reFlags=/\w*$/;/** Used to detect bad signed hexadecimal string values. */var reIsBadHex=/^[-+]0x[0-9a-f]+$/i;/** Used to detect binary string values. */var reIsBinary=/^0b[01]+$/i;/** Used to detect host constructors (Safari). */var reIsHostCtor=/^\[object .+?Constructor\]$/;/** Used to detect octal string values. */var reIsOctal=/^0o[0-7]+$/i;/** Used to detect unsigned integer values. */var reIsUint=/^(?:0|[1-9]\d*)$/;/** Used to match Latin Unicode letters (excluding mathematical operators). */var reLatin=/[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g;/** Used to ensure capturing order of template delimiters. */var reNoMatch=/($^)/;/** Used to match unescaped characters in compiled string literals. */var reUnescapedString=/['\n\r\u2028\u2029\\]/g;/** Used to compose unicode character classes. */var rsAstralRange='\\ud800-\\udfff',rsComboMarksRange='\\u0300-\\u036f',reComboHalfMarksRange='\\ufe20-\\ufe2f',rsComboSymbolsRange='\\u20d0-\\u20ff',rsComboRange=rsComboMarksRange+reComboHalfMarksRange+rsComboSymbolsRange,rsDingbatRange='\\u2700-\\u27bf',rsLowerRange='a-z\\xdf-\\xf6\\xf8-\\xff',rsMathOpRange='\\xac\\xb1\\xd7\\xf7',rsNonCharRange='\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf',rsPunctuationRange='\\u2000-\\u206f',rsSpaceRange=' \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000',rsUpperRange='A-Z\\xc0-\\xd6\\xd8-\\xde',rsVarRange='\\ufe0e\\ufe0f',rsBreakRange=rsMathOpRange+rsNonCharRange+rsPunctuationRange+rsSpaceRange;/** Used to compose unicode capture groups. */var rsApos="['\u2019]",rsAstral='['+rsAstralRange+']',rsBreak='['+rsBreakRange+']',rsCombo='['+rsComboRange+']',rsDigits='\\d+',rsDingbat='['+rsDingbatRange+']',rsLower='['+rsLowerRange+']',rsMisc='[^'+rsAstralRange+rsBreakRange+rsDigits+rsDingbatRange+rsLowerRange+rsUpperRange+']',rsFitz='\\ud83c[\\udffb-\\udfff]',rsModifier='(?:'+rsCombo+'|'+rsFitz+')',rsNonAstral='[^'+rsAstralRange+']',rsRegional='(?:\\ud83c[\\udde6-\\uddff]){2}',rsSurrPair='[\\ud800-\\udbff][\\udc00-\\udfff]',rsUpper='['+rsUpperRange+']',rsZWJ='\\u200d';/** Used to compose unicode regexes. */var rsMiscLower='(?:'+rsLower+'|'+rsMisc+')',rsMiscUpper='(?:'+rsUpper+'|'+rsMisc+')',rsOptContrLower='(?:'+rsApos+'(?:d|ll|m|re|s|t|ve))?',rsOptContrUpper='(?:'+rsApos+'(?:D|LL|M|RE|S|T|VE))?',reOptMod=rsModifier+'?',rsOptVar='['+rsVarRange+']?',rsOptJoin='(?:'+rsZWJ+'(?:'+[rsNonAstral,rsRegional,rsSurrPair].join('|')+')'+rsOptVar+reOptMod+')*',rsOrdLower='\\d*(?:1st|2nd|3rd|(?![123])\\dth)(?=\\b|[A-Z_])',rsOrdUpper='\\d*(?:1ST|2ND|3RD|(?![123])\\dTH)(?=\\b|[a-z_])',rsSeq=rsOptVar+reOptMod+rsOptJoin,rsEmoji='(?:'+[rsDingbat,rsRegional,rsSurrPair].join('|')+')'+rsSeq,rsSymbol='(?:'+[rsNonAstral+rsCombo+'?',rsCombo,rsRegional,rsSurrPair,rsAstral].join('|')+')';/** Used to match apostrophes. */var reApos=RegExp(rsApos,'g');/**
+   */var reEsTemplate=/\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g;/** Used to match `RegExp` flags from their coerced string values. */var reFlags=/\w*$/;/** Used to detect bad signed hexadecimal string values. */var reIsBadHex=/^[-+]0x[0-9a-f]+$/i;/** Used to detect binary string values. */var reIsBinary=/^0b[01]+$/i;/** Used to detect host constructors (Safari). */var reIsHostCtor=/^\[object .+?Constructor\]$/;/** Used to detect octal string values. */var reIsOctal=/^0o[0-7]+$/i;/** Used to detect unsigned integer values. */var reIsUint=/^(?:0|[1-9]\d*)$/;/** Used to match Latin Unicode letters (excluding mathematical operators). */var reLatin=/[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g;/** Used to ensure capturing order of template delimiters. */var reNoMatch=/($^)/;/** Used to match unescaped characters in compiled string literals. */var reUnescapedString=/['\n\r\u2028\u2029\\]/g;/** Used to compose unicode character classes. */var rsAstralRange='\\ud800-\\udfff',rsComboMarksRange='\\u0300-\\u036f',reComboHalfMarksRange='\\ufe20-\\ufe2f',rsComboSymbolsRange='\\u20d0-\\u20ff',rsComboRange=rsComboMarksRange+reComboHalfMarksRange+rsComboSymbolsRange,rsDingbatRange='\\u2700-\\u27bf',rsLowerRange='a-z\\xdf-\\xf6\\xf8-\\xff',rsMathOpRange='\\xac\\xb1\\xd7\\xf7',rsNonCharRange='\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf',rsPunctuationRange='\\u2000-\\u206f',rsSpaceRange=' \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000',rsUpperRange='A-Z\\xc0-\\xd6\\xd8-\\xde',rsVarRange='\\ufe0e\\ufe0f',rsBreakRange=rsMathOpRange+rsNonCharRange+rsPunctuationRange+rsSpaceRange;/** Used to compose unicode capture groups. */var rsApos='[\'\u2019]',rsAstral='['+rsAstralRange+']',rsBreak='['+rsBreakRange+']',rsCombo='['+rsComboRange+']',rsDigits='\\d+',rsDingbat='['+rsDingbatRange+']',rsLower='['+rsLowerRange+']',rsMisc='[^'+rsAstralRange+rsBreakRange+rsDigits+rsDingbatRange+rsLowerRange+rsUpperRange+']',rsFitz='\\ud83c[\\udffb-\\udfff]',rsModifier='(?:'+rsCombo+'|'+rsFitz+')',rsNonAstral='[^'+rsAstralRange+']',rsRegional='(?:\\ud83c[\\udde6-\\uddff]){2}',rsSurrPair='[\\ud800-\\udbff][\\udc00-\\udfff]',rsUpper='['+rsUpperRange+']',rsZWJ='\\u200d';/** Used to compose unicode regexes. */var rsMiscLower='(?:'+rsLower+'|'+rsMisc+')',rsMiscUpper='(?:'+rsUpper+'|'+rsMisc+')',rsOptContrLower='(?:'+rsApos+'(?:d|ll|m|re|s|t|ve))?',rsOptContrUpper='(?:'+rsApos+'(?:D|LL|M|RE|S|T|VE))?',reOptMod=rsModifier+'?',rsOptVar='['+rsVarRange+']?',rsOptJoin='(?:'+rsZWJ+'(?:'+[rsNonAstral,rsRegional,rsSurrPair].join('|')+')'+rsOptVar+reOptMod+')*',rsOrdLower='\\d*(?:1st|2nd|3rd|(?![123])\\dth)(?=\\b|[A-Z_])',rsOrdUpper='\\d*(?:1ST|2ND|3RD|(?![123])\\dTH)(?=\\b|[a-z_])',rsSeq=rsOptVar+reOptMod+rsOptJoin,rsEmoji='(?:'+[rsDingbat,rsRegional,rsSurrPair].join('|')+')'+rsSeq,rsSymbol='(?:'+[rsNonAstral+rsCombo+'?',rsCombo,rsRegional,rsSurrPair,rsAstral].join('|')+')';/** Used to match apostrophes. */var reApos=RegExp(rsApos,'g');/**
    * Used to match [combining diacritical marks](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks) and
    * [combining diacritical marks for symbols](https://en.wikipedia.org/wiki/Combining_Diacritical_Marks_for_Symbols).
    */var reComboMark=RegExp(rsCombo,'g');/** Used to match [string symbols](https://mathiasbynens.be/notes/javascript-unicode). */var reUnicode=RegExp(rsFitz+'(?='+rsFitz+')|'+rsSymbol+rsSeq,'g');/** Used to match complex or compound words. */var reUnicodeWord=RegExp([rsUpper+'?'+rsLower+'+'+rsOptContrLower+'(?='+[rsBreak,rsUpper,'$'].join('|')+')',rsMiscUpper+'+'+rsOptContrUpper+'(?='+[rsBreak,rsUpper+rsMiscLower,'$'].join('|')+')',rsUpper+'?'+rsMiscLower+'+'+rsOptContrLower,rsUpper+'+'+rsOptContrUpper,rsOrdUpper,rsOrdLower,rsDigits,rsEmoji].join('|'),'g');/** Used to detect strings with [zero-width joiners or code points from the astral planes](http://eev.ee/blog/2015/09/12/dark-corners-of-unicode/). */var reHasUnicode=RegExp('['+rsZWJ+rsAstralRange+rsComboRange+rsVarRange+']');/** Used to detect strings that need a more robust regexp to match words. */var reHasUnicodeWord=/[a-z][A-Z]|[A-Z]{2}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;/** Used to assign default `context` object properties. */var contextProps=['Array','Buffer','DataView','Date','Error','Float32Array','Float64Array','Function','Int8Array','Int16Array','Int32Array','Map','Math','Object','Promise','RegExp','Set','String','Symbol','TypeError','Uint8Array','Uint8ClampedArray','Uint16Array','Uint32Array','WeakMap','_','clearTimeout','isFinite','parseInt','setTimeout'];/** Used to make template sourceURLs easier to identify. */var templateCounter=-1;/** Used to identify `toStringTag` values of typed arrays. */var typedArrayTags={};typedArrayTags[float32Tag]=typedArrayTags[float64Tag]=typedArrayTags[int8Tag]=typedArrayTags[int16Tag]=typedArrayTags[int32Tag]=typedArrayTags[uint8Tag]=typedArrayTags[uint8ClampedTag]=typedArrayTags[uint16Tag]=typedArrayTags[uint32Tag]=true;typedArrayTags[argsTag]=typedArrayTags[arrayTag]=typedArrayTags[arrayBufferTag]=typedArrayTags[boolTag]=typedArrayTags[dataViewTag]=typedArrayTags[dateTag]=typedArrayTags[errorTag]=typedArrayTags[funcTag]=typedArrayTags[mapTag]=typedArrayTags[numberTag]=typedArrayTags[objectTag]=typedArrayTags[regexpTag]=typedArrayTags[setTag]=typedArrayTags[stringTag]=typedArrayTags[weakMapTag]=false;/** Used to identify `toStringTag` values supported by `_.clone`. */var cloneableTags={};cloneableTags[argsTag]=cloneableTags[arrayTag]=cloneableTags[arrayBufferTag]=cloneableTags[dataViewTag]=cloneableTags[boolTag]=cloneableTags[dateTag]=cloneableTags[float32Tag]=cloneableTags[float64Tag]=cloneableTags[int8Tag]=cloneableTags[int16Tag]=cloneableTags[int32Tag]=cloneableTags[mapTag]=cloneableTags[numberTag]=cloneableTags[objectTag]=cloneableTags[regexpTag]=cloneableTags[setTag]=cloneableTags[stringTag]=cloneableTags[symbolTag]=cloneableTags[uint8Tag]=cloneableTags[uint8ClampedTag]=cloneableTags[uint16Tag]=cloneableTags[uint32Tag]=true;cloneableTags[errorTag]=cloneableTags[funcTag]=cloneableTags[weakMapTag]=false;/** Used to map Latin Unicode letters to basic Latin letters. */var deburredLetters={// Latin-1 Supplement block.
 '\xc0':'A','\xc1':'A','\xc2':'A','\xc3':'A','\xc4':'A','\xc5':'A','\xe0':'a','\xe1':'a','\xe2':'a','\xe3':'a','\xe4':'a','\xe5':'a','\xc7':'C','\xe7':'c','\xd0':'D','\xf0':'d','\xc8':'E','\xc9':'E','\xca':'E','\xcb':'E','\xe8':'e','\xe9':'e','\xea':'e','\xeb':'e','\xcc':'I','\xcd':'I','\xce':'I','\xcf':'I','\xec':'i','\xed':'i','\xee':'i','\xef':'i','\xd1':'N','\xf1':'n','\xd2':'O','\xd3':'O','\xd4':'O','\xd5':'O','\xd6':'O','\xd8':'O','\xf2':'o','\xf3':'o','\xf4':'o','\xf5':'o','\xf6':'o','\xf8':'o','\xd9':'U','\xda':'U','\xdb':'U','\xdc':'U','\xf9':'u','\xfa':'u','\xfb':'u','\xfc':'u','\xdd':'Y','\xfd':'y','\xff':'y','\xc6':'Ae','\xe6':'ae','\xde':'Th','\xfe':'th','\xdf':'ss',// Latin Extended-A block.
-'\u0100':'A','\u0102':'A','\u0104':'A','\u0101':'a','\u0103':'a','\u0105':'a','\u0106':'C','\u0108':'C','\u010a':'C','\u010c':'C','\u0107':'c','\u0109':'c','\u010b':'c','\u010d':'c','\u010e':'D','\u0110':'D','\u010f':'d','\u0111':'d','\u0112':'E','\u0114':'E','\u0116':'E','\u0118':'E','\u011a':'E','\u0113':'e','\u0115':'e','\u0117':'e','\u0119':'e','\u011b':'e','\u011c':'G','\u011e':'G','\u0120':'G','\u0122':'G','\u011d':'g','\u011f':'g','\u0121':'g','\u0123':'g','\u0124':'H','\u0126':'H','\u0125':'h','\u0127':'h','\u0128':'I','\u012a':'I','\u012c':'I','\u012e':'I','\u0130':'I','\u0129':'i','\u012b':'i','\u012d':'i','\u012f':'i','\u0131':'i','\u0134':'J','\u0135':'j','\u0136':'K','\u0137':'k','\u0138':'k','\u0139':'L','\u013b':'L','\u013d':'L','\u013f':'L','\u0141':'L','\u013a':'l','\u013c':'l','\u013e':'l','\u0140':'l','\u0142':'l','\u0143':'N','\u0145':'N','\u0147':'N','\u014a':'N','\u0144':'n','\u0146':'n','\u0148':'n','\u014b':'n','\u014c':'O','\u014e':'O','\u0150':'O','\u014d':'o','\u014f':'o','\u0151':'o','\u0154':'R','\u0156':'R','\u0158':'R','\u0155':'r','\u0157':'r','\u0159':'r','\u015a':'S','\u015c':'S','\u015e':'S','\u0160':'S','\u015b':'s','\u015d':'s','\u015f':'s','\u0161':'s','\u0162':'T','\u0164':'T','\u0166':'T','\u0163':'t','\u0165':'t','\u0167':'t','\u0168':'U','\u016a':'U','\u016c':'U','\u016e':'U','\u0170':'U','\u0172':'U','\u0169':'u','\u016b':'u','\u016d':'u','\u016f':'u','\u0171':'u','\u0173':'u','\u0174':'W','\u0175':'w','\u0176':'Y','\u0177':'y','\u0178':'Y','\u0179':'Z','\u017b':'Z','\u017d':'Z','\u017a':'z','\u017c':'z','\u017e':'z','\u0132':'IJ','\u0133':'ij','\u0152':'Oe','\u0153':'oe','\u0149':"'n",'\u017f':'s'};/** Used to map characters to HTML entities. */var htmlEscapes={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};/** Used to map HTML entities to characters. */var htmlUnescapes={'&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&#39;':"'"};/** Used to escape characters for inclusion in compiled string literals. */var stringEscapes={'\\':'\\',"'":"'",'\n':'n','\r':'r','\u2028':'u2028','\u2029':'u2029'};/** Built-in method references without a dependency on `root`. */var freeParseFloat=parseFloat,freeParseInt=parseInt;/** Detect free variable `global` from Node.js. */var freeGlobal=typeof global=='object'&&global&&global.Object===Object&&global;/** Detect free variable `self`. */var freeSelf=typeof self=='object'&&self&&self.Object===Object&&self;/** Used as a reference to the global object. */var root=freeGlobal||freeSelf||Function('return this')();/** Detect free variable `exports`. */var freeExports= true&&exports&&!exports.nodeType&&exports;/** Detect free variable `module`. */var freeModule=freeExports&&typeof module=='object'&&module&&!module.nodeType&&module;/** Detect the popular CommonJS extension `module.exports`. */var moduleExports=freeModule&&freeModule.exports===freeExports;/** Detect free variable `process` from Node.js. */var freeProcess=moduleExports&&freeGlobal.process;/** Used to access faster Node.js helpers. */var nodeUtil=function(){try{// Use `util.types` for Node.js 10+.
+'\u0100':'A','\u0102':'A','\u0104':'A','\u0101':'a','\u0103':'a','\u0105':'a','\u0106':'C','\u0108':'C','\u010A':'C','\u010C':'C','\u0107':'c','\u0109':'c','\u010B':'c','\u010D':'c','\u010E':'D','\u0110':'D','\u010F':'d','\u0111':'d','\u0112':'E','\u0114':'E','\u0116':'E','\u0118':'E','\u011A':'E','\u0113':'e','\u0115':'e','\u0117':'e','\u0119':'e','\u011B':'e','\u011C':'G','\u011E':'G','\u0120':'G','\u0122':'G','\u011D':'g','\u011F':'g','\u0121':'g','\u0123':'g','\u0124':'H','\u0126':'H','\u0125':'h','\u0127':'h','\u0128':'I','\u012A':'I','\u012C':'I','\u012E':'I','\u0130':'I','\u0129':'i','\u012B':'i','\u012D':'i','\u012F':'i','\u0131':'i','\u0134':'J','\u0135':'j','\u0136':'K','\u0137':'k','\u0138':'k','\u0139':'L','\u013B':'L','\u013D':'L','\u013F':'L','\u0141':'L','\u013A':'l','\u013C':'l','\u013E':'l','\u0140':'l','\u0142':'l','\u0143':'N','\u0145':'N','\u0147':'N','\u014A':'N','\u0144':'n','\u0146':'n','\u0148':'n','\u014B':'n','\u014C':'O','\u014E':'O','\u0150':'O','\u014D':'o','\u014F':'o','\u0151':'o','\u0154':'R','\u0156':'R','\u0158':'R','\u0155':'r','\u0157':'r','\u0159':'r','\u015A':'S','\u015C':'S','\u015E':'S','\u0160':'S','\u015B':'s','\u015D':'s','\u015F':'s','\u0161':'s','\u0162':'T','\u0164':'T','\u0166':'T','\u0163':'t','\u0165':'t','\u0167':'t','\u0168':'U','\u016A':'U','\u016C':'U','\u016E':'U','\u0170':'U','\u0172':'U','\u0169':'u','\u016B':'u','\u016D':'u','\u016F':'u','\u0171':'u','\u0173':'u','\u0174':'W','\u0175':'w','\u0176':'Y','\u0177':'y','\u0178':'Y','\u0179':'Z','\u017B':'Z','\u017D':'Z','\u017A':'z','\u017C':'z','\u017E':'z','\u0132':'IJ','\u0133':'ij','\u0152':'Oe','\u0153':'oe','\u0149':"'n",'\u017F':'s'};/** Used to map characters to HTML entities. */var htmlEscapes={'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'};/** Used to map HTML entities to characters. */var htmlUnescapes={'&amp;':'&','&lt;':'<','&gt;':'>','&quot;':'"','&#39;':"'"};/** Used to escape characters for inclusion in compiled string literals. */var stringEscapes={'\\':'\\',"'":"'",'\n':'n','\r':'r','\u2028':'u2028','\u2029':'u2029'};/** Built-in method references without a dependency on `root`. */var freeParseFloat=parseFloat,freeParseInt=parseInt;/** Detect free variable `global` from Node.js. */var freeGlobal=(typeof global==='undefined'?'undefined':_typeof(global))=='object'&&global&&global.Object===Object&&global;/** Detect free variable `self`. */var freeSelf=(typeof self==='undefined'?'undefined':_typeof(self))=='object'&&self&&self.Object===Object&&self;/** Used as a reference to the global object. */var root=freeGlobal||freeSelf||Function('return this')();/** Detect free variable `exports`. */var freeExports=( false?undefined:_typeof(exports))=='object'&&exports&&!exports.nodeType&&exports;/** Detect free variable `module`. */var freeModule=freeExports&&( false?undefined:_typeof(module))=='object'&&module&&!module.nodeType&&module;/** Detect the popular CommonJS extension `module.exports`. */var moduleExports=freeModule&&freeModule.exports===freeExports;/** Detect free variable `process` from Node.js. */var freeProcess=moduleExports&&freeGlobal.process;/** Used to access faster Node.js helpers. */var nodeUtil=function(){try{// Use `util.types` for Node.js 10+.
 var types=freeModule&&freeModule.require&&freeModule.require('util').types;if(types){return types;}// Legacy `process.binding('util')` for Node.js < 10.
 return freeProcess&&freeProcess.binding&&freeProcess.binding('util');}catch(e){}}();/* Node.js helper references. */var nodeIsArrayBuffer=nodeUtil&&nodeUtil.isArrayBuffer,nodeIsDate=nodeUtil&&nodeUtil.isDate,nodeIsMap=nodeUtil&&nodeUtil.isMap,nodeIsRegExp=nodeUtil&&nodeUtil.isRegExp,nodeIsSet=nodeUtil&&nodeUtil.isSet,nodeIsTypedArray=nodeUtil&&nodeUtil.isTypedArray;/*--------------------------------------------------------------------------*//**
    * A faster alternative to `Function#apply`, this function invokes `func`
@@ -10478,7 +10781,7 @@ return freeProcess&&freeProcess.binding&&freeProcess.binding('util');}catch(e){}
      * Used to resolve the
      * [`toStringTag`](http://ecma-international.org/ecma-262/7.0/#sec-object.prototype.tostring)
      * of values.
-     */var nativeObjectToString=objectProto.toString;/** Used to infer the `Object` constructor. */var objectCtorString=funcToString.call(Object);/** Used to restore the original `_` reference in `_.noConflict`. */var oldDash=root._;/** Used to detect if a method is native. */var reIsNative=RegExp('^'+funcToString.call(hasOwnProperty).replace(reRegExpChar,'\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,'$1.*?')+'$');/** Built-in value references. */var Buffer=moduleExports?context.Buffer:undefined,Symbol=context.Symbol,Uint8Array=context.Uint8Array,allocUnsafe=Buffer?Buffer.allocUnsafe:undefined,getPrototype=overArg(Object.getPrototypeOf,Object),objectCreate=Object.create,propertyIsEnumerable=objectProto.propertyIsEnumerable,splice=arrayProto.splice,spreadableSymbol=Symbol?Symbol.isConcatSpreadable:undefined,symIterator=Symbol?Symbol.iterator:undefined,symToStringTag=Symbol?Symbol.toStringTag:undefined;var defineProperty=function(){try{var func=getNative(Object,'defineProperty');func({},'',{});return func;}catch(e){}}();/** Mocked built-ins. */var ctxClearTimeout=context.clearTimeout!==root.clearTimeout&&context.clearTimeout,ctxNow=Date&&Date.now!==root.Date.now&&Date.now,ctxSetTimeout=context.setTimeout!==root.setTimeout&&context.setTimeout;/* Built-in method references for those with the same name as other `lodash` methods. */var nativeCeil=Math.ceil,nativeFloor=Math.floor,nativeGetSymbols=Object.getOwnPropertySymbols,nativeIsBuffer=Buffer?Buffer.isBuffer:undefined,nativeIsFinite=context.isFinite,nativeJoin=arrayProto.join,nativeKeys=overArg(Object.keys,Object),nativeMax=Math.max,nativeMin=Math.min,nativeNow=Date.now,nativeParseInt=context.parseInt,nativeRandom=Math.random,nativeReverse=arrayProto.reverse;/* Built-in method references that are verified to be native. */var DataView=getNative(context,'DataView'),Map=getNative(context,'Map'),Promise=getNative(context,'Promise'),Set=getNative(context,'Set'),WeakMap=getNative(context,'WeakMap'),nativeCreate=getNative(Object,'create');/** Used to store function metadata. */var metaMap=WeakMap&&new WeakMap();/** Used to lookup unminified function names. */var realNames={};/** Used to detect maps, sets, and weakmaps. */var dataViewCtorString=toSource(DataView),mapCtorString=toSource(Map),promiseCtorString=toSource(Promise),setCtorString=toSource(Set),weakMapCtorString=toSource(WeakMap);/** Used to convert symbols to primitives and strings. */var symbolProto=Symbol?Symbol.prototype:undefined,symbolValueOf=symbolProto?symbolProto.valueOf:undefined,symbolToString=symbolProto?symbolProto.toString:undefined;/*------------------------------------------------------------------------*//**
+     */var nativeObjectToString=objectProto.toString;/** Used to infer the `Object` constructor. */var objectCtorString=funcToString.call(Object);/** Used to restore the original `_` reference in `_.noConflict`. */var oldDash=root._;/** Used to detect if a method is native. */var reIsNative=RegExp('^'+funcToString.call(hasOwnProperty).replace(reRegExpChar,'\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g,'$1.*?')+'$');/** Built-in value references. */var Buffer=moduleExports?context.Buffer:undefined,_Symbol=context.Symbol,Uint8Array=context.Uint8Array,allocUnsafe=Buffer?Buffer.allocUnsafe:undefined,getPrototype=overArg(Object.getPrototypeOf,Object),objectCreate=Object.create,propertyIsEnumerable=objectProto.propertyIsEnumerable,splice=arrayProto.splice,spreadableSymbol=_Symbol?_Symbol.isConcatSpreadable:undefined,symIterator=_Symbol?_Symbol.iterator:undefined,symToStringTag=_Symbol?_Symbol.toStringTag:undefined;var defineProperty=function(){try{var func=getNative(Object,'defineProperty');func({},'',{});return func;}catch(e){}}();/** Mocked built-ins. */var ctxClearTimeout=context.clearTimeout!==root.clearTimeout&&context.clearTimeout,ctxNow=Date&&Date.now!==root.Date.now&&Date.now,ctxSetTimeout=context.setTimeout!==root.setTimeout&&context.setTimeout;/* Built-in method references for those with the same name as other `lodash` methods. */var nativeCeil=Math.ceil,nativeFloor=Math.floor,nativeGetSymbols=Object.getOwnPropertySymbols,nativeIsBuffer=Buffer?Buffer.isBuffer:undefined,nativeIsFinite=context.isFinite,nativeJoin=arrayProto.join,nativeKeys=overArg(Object.keys,Object),nativeMax=Math.max,nativeMin=Math.min,nativeNow=Date.now,nativeParseInt=context.parseInt,nativeRandom=Math.random,nativeReverse=arrayProto.reverse;/* Built-in method references that are verified to be native. */var DataView=getNative(context,'DataView'),Map=getNative(context,'Map'),Promise=getNative(context,'Promise'),Set=getNative(context,'Set'),WeakMap=getNative(context,'WeakMap'),nativeCreate=getNative(Object,'create');/** Used to store function metadata. */var metaMap=WeakMap&&new WeakMap();/** Used to lookup unminified function names. */var realNames={};/** Used to detect maps, sets, and weakmaps. */var dataViewCtorString=toSource(DataView),mapCtorString=toSource(Map),promiseCtorString=toSource(Promise),setCtorString=toSource(Set),weakMapCtorString=toSource(WeakMap);/** Used to convert symbols to primitives and strings. */var symbolProto=_Symbol?_Symbol.prototype:undefined,symbolValueOf=symbolProto?symbolProto.valueOf:undefined,symbolToString=symbolProto?symbolProto.toString:undefined;/*------------------------------------------------------------------------*//**
      * Creates a `lodash` object which wraps `value` to enable implicit method
      * chain sequences. Methods that operate on and return arrays, collections,
      * and functions can be chained together. Methods that retrieve a single value
@@ -11313,7 +11616,7 @@ baseFlatten(value,depth-1,predicate,isStrict,result);}else{arrayPush(result,valu
      * @returns {Function} Returns the iteratee.
      */function baseIteratee(value){// Don't store the `typeof` result in a variable to avoid a JIT bug in Safari 9.
 // See https://bugs.webkit.org/show_bug.cgi?id=156034 for more details.
-if(typeof value=='function'){return value;}if(value==null){return identity;}if(typeof value=='object'){return isArray(value)?baseMatchesProperty(value[0],value[1]):baseMatches(value);}return property(value);}/**
+if(typeof value=='function'){return value;}if(value==null){return identity;}if((typeof value==='undefined'?'undefined':_typeof(value))=='object'){return isArray(value)?baseMatchesProperty(value[0],value[1]):baseMatches(value);}return property(value);}/**
      * The base implementation of `_.keys` which doesn't treat sparse arrays as dense.
      *
      * @private
@@ -11861,7 +12164,7 @@ return isObject(result)?result:thisBinding;};}/**
      * @private
      * @param {Function} findIndexFunc The function to find the collection index.
      * @returns {Function} Returns the new find function.
-     */function createFind(findIndexFunc){return function(collection,predicate,fromIndex){var iterable=Object(collection);if(!isArrayLike(collection)){var iteratee=getIteratee(predicate,3);collection=keys(collection);predicate=function(key){return iteratee(iterable[key],key,iterable);};}var index=findIndexFunc(collection,predicate,fromIndex);return index>-1?iterable[iteratee?collection[index]:index]:undefined;};}/**
+     */function createFind(findIndexFunc){return function(collection,predicate,fromIndex){var iterable=Object(collection);if(!isArrayLike(collection)){var iteratee=getIteratee(predicate,3);collection=keys(collection);predicate=function predicate(key){return iteratee(iterable[key],key,iterable);};}var index=findIndexFunc(collection,predicate,fromIndex);return index>-1?iterable[iteratee?collection[index]:index]:undefined;};}/**
      * Creates a `_.flow` or `_.flowRight` function.
      *
      * @private
@@ -12175,7 +12478,7 @@ if(objCtor!=othCtor&&'constructor'in object&&'constructor'in other&&!(typeof obj
      * @param {*} value The value to query.
      * @returns {string} Returns the `toStringTag`.
      */var getTag=baseGetTag;// Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
-if(DataView&&getTag(new DataView(new ArrayBuffer(1)))!=dataViewTag||Map&&getTag(new Map())!=mapTag||Promise&&getTag(Promise.resolve())!=promiseTag||Set&&getTag(new Set())!=setTag||WeakMap&&getTag(new WeakMap())!=weakMapTag){getTag=function(value){var result=baseGetTag(value),Ctor=result==objectTag?value.constructor:undefined,ctorString=Ctor?toSource(Ctor):'';if(ctorString){switch(ctorString){case dataViewCtorString:return dataViewTag;case mapCtorString:return mapTag;case promiseCtorString:return promiseTag;case setCtorString:return setTag;case weakMapCtorString:return weakMapTag;}}return result;};}/**
+if(DataView&&getTag(new DataView(new ArrayBuffer(1)))!=dataViewTag||Map&&getTag(new Map())!=mapTag||Promise&&getTag(Promise.resolve())!=promiseTag||Set&&getTag(new Set())!=setTag||WeakMap&&getTag(new WeakMap())!=weakMapTag){getTag=function getTag(value){var result=baseGetTag(value),Ctor=result==objectTag?value.constructor:undefined,ctorString=Ctor?toSource(Ctor):'';if(ctorString){switch(ctorString){case dataViewCtorString:return dataViewTag;case mapCtorString:return mapTag;case promiseCtorString:return promiseTag;case setCtorString:return setTag;case weakMapCtorString:return weakMapTag;}}return result;};}/**
      * Gets the view, applying any `transforms` to the `start` and `end` positions.
      *
      * @private
@@ -12242,7 +12545,7 @@ if(length&&typeof array[0]=='string'&&hasOwnProperty.call(array,'index')){result
      * @param {*} value The value to check.
      * @param {number} [length=MAX_SAFE_INTEGER] The upper bounds of a valid index.
      * @returns {boolean} Returns `true` if `value` is a valid index, else `false`.
-     */function isIndex(value,length){var type=typeof value;length=length==null?MAX_SAFE_INTEGER:length;return!!length&&(type=='number'||type!='symbol'&&reIsUint.test(value))&&value>-1&&value%1==0&&value<length;}/**
+     */function isIndex(value,length){var type=typeof value==='undefined'?'undefined':_typeof(value);length=length==null?MAX_SAFE_INTEGER:length;return!!length&&(type=='number'||type!='symbol'&&reIsUint.test(value))&&value>-1&&value%1==0&&value<length;}/**
      * Checks if the given arguments are from an iteratee call.
      *
      * @private
@@ -12251,20 +12554,20 @@ if(length&&typeof array[0]=='string'&&hasOwnProperty.call(array,'index')){result
      * @param {*} object The potential iteratee object argument.
      * @returns {boolean} Returns `true` if the arguments are from an iteratee call,
      *  else `false`.
-     */function isIterateeCall(value,index,object){if(!isObject(object)){return false;}var type=typeof index;if(type=='number'?isArrayLike(object)&&isIndex(index,object.length):type=='string'&&index in object){return eq(object[index],value);}return false;}/**
+     */function isIterateeCall(value,index,object){if(!isObject(object)){return false;}var type=typeof index==='undefined'?'undefined':_typeof(index);if(type=='number'?isArrayLike(object)&&isIndex(index,object.length):type=='string'&&index in object){return eq(object[index],value);}return false;}/**
      * Checks if `value` is a property name and not a property path.
      *
      * @private
      * @param {*} value The value to check.
      * @param {Object} [object] The object to query keys on.
      * @returns {boolean} Returns `true` if `value` is a property name, else `false`.
-     */function isKey(value,object){if(isArray(value)){return false;}var type=typeof value;if(type=='number'||type=='symbol'||type=='boolean'||value==null||isSymbol(value)){return true;}return reIsPlainProp.test(value)||!reIsDeepProp.test(value)||object!=null&&value in Object(object);}/**
+     */function isKey(value,object){if(isArray(value)){return false;}var type=typeof value==='undefined'?'undefined':_typeof(value);if(type=='number'||type=='symbol'||type=='boolean'||value==null||isSymbol(value)){return true;}return reIsPlainProp.test(value)||!reIsDeepProp.test(value)||object!=null&&value in Object(object);}/**
      * Checks if `value` is suitable for use as unique object key.
      *
      * @private
      * @param {*} value The value to check.
      * @returns {boolean} Returns `true` if `value` is suitable, else `false`.
-     */function isKeyable(value){var type=typeof value;return type=='string'||type=='number'||type=='symbol'||type=='boolean'?value!=='__proto__':value===null;}/**
+     */function isKeyable(value){var type=typeof value==='undefined'?'undefined':_typeof(value);return type=='string'||type=='number'||type=='symbol'||type=='boolean'?value!=='__proto__':value===null;}/**
      * Checks if `func` has a lazy counterpart.
      *
      * @private
@@ -13854,7 +14157,7 @@ data[0]=source[0];data[1]=newBitmask;return data;}/**
      *
      * _(object).at(['a[0].b.c', 'a[1]']).value();
      * // => [3, 4]
-     */var wrapperAt=flatRest(function(paths){var length=paths.length,start=length?paths[0]:0,value=this.__wrapped__,interceptor=function(object){return baseAt(object,paths);};if(length>1||this.__actions__.length||!(value instanceof LazyWrapper)||!isIndex(start)){return this.thru(interceptor);}value=value.slice(start,+start+(length?1:0));value.__actions__.push({'func':thru,'args':[interceptor],'thisArg':undefined});return new LodashWrapper(value,this.__chain__).thru(function(array){if(length&&!array.length){array.push(undefined);}return array;});});/**
+     */var wrapperAt=flatRest(function(paths){var length=paths.length,start=length?paths[0]:0,value=this.__wrapped__,interceptor=function interceptor(object){return baseAt(object,paths);};if(length>1||this.__actions__.length||!(value instanceof LazyWrapper)||!isIndex(start)){return this.thru(interceptor);}value=value.slice(start,+start+(length?1:0));value.__actions__.push({'func':thru,'args':[interceptor],'thisArg':undefined});return new LodashWrapper(value,this.__chain__).thru(function(array){if(length&&!array.length){array.push(undefined);}return array;});});/**
      * Creates a `lodash` wrapper instance with explicit method chain sequences enabled.
      *
      * @name chain
@@ -15061,7 +15364,7 @@ timerId=setTimeout(timerExpired,wait);return invokeFunc(lastCallTime);}}if(timer
      *
      * // Replace `_.memoize.Cache`.
      * _.memoize.Cache = WeakMap;
-     */function memoize(func,resolver){if(typeof func!='function'||resolver!=null&&typeof resolver!='function'){throw new TypeError(FUNC_ERROR_TEXT);}var memoized=function(){var args=arguments,key=resolver?resolver.apply(this,args):args[0],cache=memoized.cache;if(cache.has(key)){return cache.get(key);}var result=func.apply(this,args);memoized.cache=cache.set(key,result)||cache;return result;};memoized.cache=new(memoize.Cache||MapCache)();return memoized;}// Expose `MapCache`.
+     */function memoize(func,resolver){if(typeof func!='function'||resolver!=null&&typeof resolver!='function'){throw new TypeError(FUNC_ERROR_TEXT);}var memoized=function memoized(){var args=arguments,key=resolver?resolver.apply(this,args):args[0],cache=memoized.cache;if(cache.has(key)){return cache.get(key);}var result=func.apply(this,args);memoized.cache=cache.set(key,result)||cache;return result;};memoized.cache=new(memoize.Cache||MapCache)();return memoized;}// Expose `MapCache`.
 memoize.Cache=MapCache;/**
      * Creates a function that negates the result of the predicate `func`. The
      * `func` predicate is invoked with the `this` binding and arguments of the
@@ -15967,7 +16270,7 @@ var tag=baseGetTag(value);return tag==funcTag||tag==genTag||tag==asyncTag||tag==
      *
      * _.isObject(null);
      * // => false
-     */function isObject(value){var type=typeof value;return value!=null&&(type=='object'||type=='function');}/**
+     */function isObject(value){var type=typeof value==='undefined'?'undefined':_typeof(value);return value!=null&&(type=='object'||type=='function');}/**
      * Checks if `value` is object-like. A value is object-like if it's not `null`
      * and has a `typeof` result of "object".
      *
@@ -15990,7 +16293,7 @@ var tag=baseGetTag(value);return tag==funcTag||tag==genTag||tag==asyncTag||tag==
      *
      * _.isObjectLike(null);
      * // => false
-     */function isObjectLike(value){return value!=null&&typeof value=='object';}/**
+     */function isObjectLike(value){return value!=null&&(typeof value==='undefined'?'undefined':_typeof(value))=='object';}/**
      * Checks if `value` is classified as a `Map` object.
      *
      * @static
@@ -16296,7 +16599,7 @@ return isNumber(value)&&value!=+value;}/**
      *
      * _.isSymbol('abc');
      * // => false
-     */function isSymbol(value){return typeof value=='symbol'||isObjectLike(value)&&baseGetTag(value)==symbolTag;}/**
+     */function isSymbol(value){return(typeof value==='undefined'?'undefined':_typeof(value))=='symbol'||isObjectLike(value)&&baseGetTag(value)==symbolTag;}/**
      * Checks if `value` is classified as a typed array.
      *
      * @static
@@ -19413,7 +19716,7 @@ arrayEach(['drop','take'],function(methodName,index){LazyWrapper.prototype[metho
 arrayEach(['filter','map','takeWhile'],function(methodName,index){var type=index+1,isFilter=type==LAZY_FILTER_FLAG||type==LAZY_WHILE_FLAG;LazyWrapper.prototype[methodName]=function(iteratee){var result=this.clone();result.__iteratees__.push({'iteratee':getIteratee(iteratee,3),'type':type});result.__filtered__=result.__filtered__||isFilter;return result;};});// Add `LazyWrapper` methods for `_.head` and `_.last`.
 arrayEach(['head','last'],function(methodName,index){var takeName='take'+(index?'Right':'');LazyWrapper.prototype[methodName]=function(){return this[takeName](1).value()[0];};});// Add `LazyWrapper` methods for `_.initial` and `_.tail`.
 arrayEach(['initial','tail'],function(methodName,index){var dropName='drop'+(index?'':'Right');LazyWrapper.prototype[methodName]=function(){return this.__filtered__?new LazyWrapper(this):this[dropName](1);};});LazyWrapper.prototype.compact=function(){return this.filter(identity);};LazyWrapper.prototype.find=function(predicate){return this.filter(predicate).head();};LazyWrapper.prototype.findLast=function(predicate){return this.reverse().find(predicate);};LazyWrapper.prototype.invokeMap=baseRest(function(path,args){if(typeof path=='function'){return new LazyWrapper(this);}return this.map(function(value){return baseInvoke(value,path,args);});});LazyWrapper.prototype.reject=function(predicate){return this.filter(negate(getIteratee(predicate)));};LazyWrapper.prototype.slice=function(start,end){start=toInteger(start);var result=this;if(result.__filtered__&&(start>0||end<0)){return new LazyWrapper(result);}if(start<0){result=result.takeRight(-start);}else if(start){result=result.drop(start);}if(end!==undefined){end=toInteger(end);result=end<0?result.dropRight(-end):result.take(end-start);}return result;};LazyWrapper.prototype.takeRightWhile=function(predicate){return this.reverse().takeWhile(predicate).reverse();};LazyWrapper.prototype.toArray=function(){return this.take(MAX_ARRAY_LENGTH);};// Add `LazyWrapper` methods to `lodash.prototype`.
-baseForOwn(LazyWrapper.prototype,function(func,methodName){var checkIteratee=/^(?:filter|find|map|reject)|While$/.test(methodName),isTaker=/^(?:head|last)$/.test(methodName),lodashFunc=lodash[isTaker?'take'+(methodName=='last'?'Right':''):methodName],retUnwrapped=isTaker||/^find/.test(methodName);if(!lodashFunc){return;}lodash.prototype[methodName]=function(){var value=this.__wrapped__,args=isTaker?[1]:arguments,isLazy=value instanceof LazyWrapper,iteratee=args[0],useLazy=isLazy||isArray(value);var interceptor=function(value){var result=lodashFunc.apply(lodash,arrayPush([value],args));return isTaker&&chainAll?result[0]:result;};if(useLazy&&checkIteratee&&typeof iteratee=='function'&&iteratee.length!=1){// Avoid lazy use if the iteratee has a "length" value other than `1`.
+baseForOwn(LazyWrapper.prototype,function(func,methodName){var checkIteratee=/^(?:filter|find|map|reject)|While$/.test(methodName),isTaker=/^(?:head|last)$/.test(methodName),lodashFunc=lodash[isTaker?'take'+(methodName=='last'?'Right':''):methodName],retUnwrapped=isTaker||/^find/.test(methodName);if(!lodashFunc){return;}lodash.prototype[methodName]=function(){var value=this.__wrapped__,args=isTaker?[1]:arguments,isLazy=value instanceof LazyWrapper,iteratee=args[0],useLazy=isLazy||isArray(value);var interceptor=function interceptor(value){var result=lodashFunc.apply(lodash,arrayPush([value],args));return isTaker&&chainAll?result[0]:result;};if(useLazy&&checkIteratee&&typeof iteratee=='function'&&iteratee.length!=1){// Avoid lazy use if the iteratee has a "length" value other than `1`.
 isLazy=useLazy=false;}var chainAll=this.__chain__,isHybrid=!!this.__actions__.length,isUnwrapped=retUnwrapped&&!chainAll,onlyLazy=isLazy&&!isHybrid;if(!retUnwrapped&&useLazy){value=onlyLazy?value:new LazyWrapper(this);var result=func.apply(value,args);result.__actions__.push({'func':thru,'args':[interceptor],'thisArg':undefined});return new LodashWrapper(result,chainAll);}if(isUnwrapped&&onlyLazy){return func.apply(this,args);}result=this.thru(interceptor);return isUnwrapped?isTaker?result.value()[0]:result.value():result;};});// Add `Array` methods to `lodash.prototype`.
 arrayEach(['pop','push','shift','sort','splice','unshift'],function(methodName){var func=arrayProto[methodName],chainName=/^(?:push|sort|unshift)$/.test(methodName)?'tap':'thru',retUnwrapped=/^(?:pop|shift)$/.test(methodName);lodash.prototype[methodName]=function(){var args=arguments;if(retUnwrapped&&!this.__chain__){var value=this.value();return func.apply(isArray(value)?value:[],args);}return this[chainName](function(value){return func.apply(isArray(value)?value:[],args);});};});// Map minified method names to their real names.
 baseForOwn(LazyWrapper.prototype,function(func,methodName){var lodashFunc=lodash[methodName];if(lodashFunc){var key=lodashFunc.name+'',names=realNames[key]||(realNames[key]=[]);names.push({'name':methodName,'func':lodashFunc});}});realNames[createHybrid(undefined,WRAP_BIND_KEY_FLAG).name]=[{'name':'wrapper','func':undefined}];// Add methods to `LazyWrapper`.
@@ -19421,7 +19724,7 @@ LazyWrapper.prototype.clone=lazyClone;LazyWrapper.prototype.reverse=lazyReverse;
 lodash.prototype.at=wrapperAt;lodash.prototype.chain=wrapperChain;lodash.prototype.commit=wrapperCommit;lodash.prototype.next=wrapperNext;lodash.prototype.plant=wrapperPlant;lodash.prototype.reverse=wrapperReverse;lodash.prototype.toJSON=lodash.prototype.valueOf=lodash.prototype.value=wrapperValue;// Add lazy aliases.
 lodash.prototype.first=lodash.prototype.head;if(symIterator){lodash.prototype[symIterator]=wrapperToIterator;}return lodash;};/*--------------------------------------------------------------------------*/// Export lodash.
 var _=runInContext();// Some AMD build optimizers, like r.js, check for condition patterns like:
-if(true){// Expose Lodash on the global object to prevent errors when Lodash is
+if( true&&_typeof(__webpack_require__(3))=='object'&&__webpack_require__(3)){// Expose Lodash on the global object to prevent errors when Lodash is
 // loaded by a script tag in the presence of an AMD loader.
 // See http://requirejs.org/docs/errors.html#mismatch for more details.
 // Use `_.noConflict` to remove Lodash from the global object.
@@ -19429,12 +19732,20 @@ root._=_;// Define as an anonymous module so, through path mapping, it can be
 // referenced as the "underscore" module.
 !(__WEBPACK_AMD_DEFINE_RESULT__ = (function(){return _;}).call(exports, __webpack_require__, exports, module),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));}// Check for `exports` after `define` in case a build optimizer adds it.
-else {}}).call(this);
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2), __webpack_require__(3)(module)))
+else if(freeModule){// Export for Node.js.
+(freeModule.exports=_)._=_;// Export for CommonJS support.
+freeExports._=_;}else{// Export to the global object.
+root._=_;}}).call(undefined);
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9), __webpack_require__(2)(module)))
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports) {
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var g;
 
@@ -19448,7 +19759,7 @@ try {
 	g = g || Function("return this")() || (1, eval)("this");
 } catch (e) {
 	// This works if the window reference is available
-	if (typeof window === "object") g = window;
+	if ((typeof window === "undefined" ? "undefined" : _typeof(window)) === "object") g = window;
 }
 
 // g can still be undefined, but nothing to do about it...
@@ -19458,134 +19769,89 @@ try {
 module.exports = g;
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-module.exports = function (module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function () {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function () {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function () {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-/***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-__webpack_require__.r(__webpack_exports__);
-
-// CONCATENATED MODULE: ./js/mediator.js
-const Mediator = function () {
-
-    const messages = {};
-
-    class Mediator {
-        static subscribe(msg, fn, context) {
-            if (!messages[msg]) {
-                messages[msg] = [];
-            }
-            messages[msg].push({ context: context || this, callback: fn });
-        }
-
-        static publish(msg) {
-            const args = Array.prototype.slice.call(arguments, 1);
-            if (!messages[msg]) {
-                return false;
-            }
-
-            messages[msg].forEach(function (subscription) {
-                subscription.callback.apply(subscription.context, args);
-            });
-        }
-
-        static installTo(obj) {
-            obj.subscribe = Mediator.subscribe;
-            obj.publish = Mediator.publish;
-        }
-
-        static getMessages() {
-            return messages;
-        }
-
-    }
-
-    return Mediator;
-}();
-
-/* harmony default export */ var js_mediator = (Mediator);
-// CONCATENATED MODULE: ./js/config.js
-const Config = {
-    jQuery: __webpack_require__(0),
-    _: __webpack_require__(1),
-    gameWidth: window.innerWidth,
-    gameHeight: window.innerHeight,
-    gameStatus: {
-        playing: 'Playing',
-        start: 'Start',
-        paused: 'Paused',
-        crashed: 'Crashed'
-    },
-    collisionAttempts: 5,
-    levelCoverage: 1000,
-    maxLevels: 10
-};
-
-/* harmony default export */ var config = (Config);
-// CONCATENATED MODULE: ./js/canvas.js
 
 
-const canvas_Canvas = function () {
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-    const { jQuery: $, gameWidth, gameHeight } = config;
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-    const canvas = $('<canvas></canvas>').attr('width', gameWidth * window.devicePixelRatio).attr('height', gameHeight * window.devicePixelRatio).css({
+var _config = __webpack_require__(0);
+
+var _config2 = _interopRequireDefault(_config);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Canvas = function () {
+    var $ = _config2.default.jQuery,
+        gameWidth = _config2.default.gameWidth,
+        gameHeight = _config2.default.gameHeight;
+
+
+    var canvas = $('<canvas></canvas>').attr('width', gameWidth * window.devicePixelRatio).attr('height', gameHeight * window.devicePixelRatio).css({
         width: gameWidth + 'px',
         height: gameHeight + 'px'
     });
 
-    const ctx = canvas[0].getContext('2d');
+    var ctx = canvas[0].getContext('2d');
 
-    class Canvas {
-        constructor() {
+    var Canvas = function () {
+        function Canvas() {
+            _classCallCheck(this, Canvas);
+
             $('body').append(canvas);
         }
 
-        get context() {
-            return ctx;
-        }
+        _createClass(Canvas, [{
+            key: 'clearCanvas',
+            value: function clearCanvas() {
+                ctx.clearRect(0, 0, gameWidth, gameHeight);
+            }
+        }, {
+            key: 'context',
+            get: function get() {
+                return ctx;
+            }
+        }]);
 
-        clearCanvas() {
-            ctx.clearRect(0, 0, gameWidth, gameHeight);
-        }
-    }
+        return Canvas;
+    }();
 
     return Canvas;
 }();
 
-/* harmony default export */ var js_canvas = (new canvas_Canvas());
-// CONCATENATED MODULE: ./js/assets.js
+exports.default = new Canvas();
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-const assets_Assets = function ($) {
-    const assets = {
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _config = __webpack_require__(0);
+
+var _config2 = _interopRequireDefault(_config);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+exports.default = function ($) {
+    var assets = {
         'skierCrash': 'img/skier_crash.png',
         'skierLeft': 'img/skier_left.png',
         'skierLeftDown': 'img/skier_left_down.png',
@@ -19598,594 +19864,656 @@ const assets_Assets = function ($) {
         'rock2': 'img/rock_2.png'
     };
 
-    const loadedAssets = {};
+    var loadedAssets = {};
+    var _ = _config2.default._;
 
-    class Assets {
-        constructor() {
+    var Assets = function () {
+        function Assets() {
+            _classCallCheck(this, Assets);
+
             this.subscribe('loadAssets', this.resolveAssets);
         }
 
-        get loadedAssets() {
-            return loadedAssets;
-        }
+        _createClass(Assets, [{
+            key: 'loadAssets',
+            value: function loadAssets() {
+                var assetPromises = [];
 
-        loadAssets() {
-            var assetPromises = [];
+                _.each(assets, function (asset, assetName) {
+                    var assetImage = new Image();
+                    var assetDeferred = new $.Deferred();
 
-            _.each(assets, function (asset, assetName) {
-                var assetImage = new Image();
-                var assetDeferred = new $.Deferred();
+                    assetImage.onload = function () {
+                        assetImage.width /= 2;
+                        assetImage.height /= 2;
 
-                assetImage.onload = function () {
-                    assetImage.width /= 2;
-                    assetImage.height /= 2;
+                        loadedAssets[assetName] = assetImage;
+                        assetDeferred.resolve();
+                    };
+                    assetImage.src = asset;
 
-                    loadedAssets[assetName] = assetImage;
-                    assetDeferred.resolve();
-                };
-                assetImage.src = asset;
+                    assetPromises.push(assetDeferred.promise());
+                });
 
-                assetPromises.push(assetDeferred.promise());
-            });
+                return $.when.apply($, assetPromises);
+            }
+        }, {
+            key: 'resolveAssets',
+            value: function resolveAssets(gameLoop) {
+                var _this = this;
 
-            return $.when.apply($, assetPromises);
-        }
+                this.loadAssets().then(function () {
+                    _this.publish('placeInitialObstacles');
+                    requestAnimationFrame(gameLoop);
+                });
+            }
+        }, {
+            key: 'loadedAssets',
+            get: function get() {
+                return loadedAssets;
+            }
+        }]);
 
-        resolveAssets() {
-            this.loadAssets().then(() => {
-                facademediator.publish('placeInitialObstacles');
-                requestAnimationFrame(facademediator.gameLoop);
-            });
-        }
-    }
+        return Assets;
+    }();
 
     return Assets;
-}(config.jQuery);
+}(_config2.default.jQuery);
 
-/* harmony default export */ var js_assets = (assets_Assets);
-// CONCATENATED MODULE: ./js/skier.js
+/***/ }),
+/* 12 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-const skier_Skier = function ($) {
-    const { gameStatus, maxLevels, gameWidth, gameHeight } = config;
-    let { levelCoverage } = config;
-    const skierAsset = ['skierCrash', 'skierLeft', 'skierLeftDown', 'skierDown', 'skierRightDown', 'skierRight'];
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-    let skierDirection;
-    let skierMapX;
-    let skierMapY;
-    let skierSpeed;
-    let totalCollisions = 0;
-    let gameLevel;
+var _config = __webpack_require__(0);
 
-    class Skier {
+var _config2 = _interopRequireDefault(_config);
 
-        constructor() {
+var _facademediator = __webpack_require__(1);
+
+var _facademediator2 = _interopRequireDefault(_facademediator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Skier = function ($) {
+    var gameStatus = _config2.default.gameStatus,
+        maxLevels = _config2.default.maxLevels,
+        gameWidth = _config2.default.gameWidth,
+        gameHeight = _config2.default.gameHeight;
+    var levelCoverage = _config2.default.levelCoverage;
+
+    var skierAsset = ['skierCrash', 'skierLeft', 'skierLeftDown', 'skierDown', 'skierRightDown', 'skierRight'];
+
+    var skierDirection = void 0;
+    var skierMapX = void 0;
+    var skierMapY = void 0;
+    var skierSpeed = void 0;
+    var totalCollisions = 0;
+    var gameLevel = void 0;
+
+    var Skier = function () {
+        function Skier() {
+            _classCallCheck(this, Skier);
+
             this.setVars();
             $('section#game-board .speed span').html(this.speed);
         }
 
-        setVars() {
-            this.direction = 5;
-            this.mapX = 0;
-            this.mapY = 0;
-            this.speed = 8;
-            this.level = 1;
-        }
-
-        get direction() {
-            return skierDirection;
-        }
-
-        set direction(sd) {
-            skierDirection = sd;
-        }
-
-        get level() {
-            return gameLevel;
-        }
-
-        set level(lvl) {
-            gameLevel = lvl;
-        }
-
-        get mapX() {
-            return skierMapX;
-        }
-
-        set mapX(smx) {
-            skierMapX = smx;
-        }
-
-        get mapY() {
-            return skierMapY;
-        }
-
-        set mapY(smy) {
-            skierMapY = smy;
-        }
-
-        get speed() {
-            return skierSpeed;
-        }
-
-        set speed(ss) {
-            skierSpeed = ss;
-        }
-
-        getSkierAsset(dir) {
-            return skierAsset[dir];
-        }
-
-        drawSkier() {
-            const skierImage = facademediator.assets.loadedAssets[this.getSkierAsset(this.direction)];
-            const x = (gameWidth - skierImage.width) / 2;
-            const y = (gameHeight - skierImage.height) / 2;
-
-            facademediator.canvas.context.drawImage(skierImage, x, y, skierImage.width, skierImage.height);
-        }
-
-        moveSkier(o) {
-            let oldMapY = this.mapY;
-            switch (this.direction) {
-                case 2:
-                    this.mapX -= Math.round(this.speed / 1.4142);
-                    this.mapY += Math.round(this.speed / 1.4142);
-
-                    o.placeNewObstacle(this.direction);
-                    break;
-                case 3:
-                    this.mapY += this.speed;
-
-                    o.placeNewObstacle(this.direction);
-                    break;
-                case 4:
-                    this.mapX += this.speed / 1.4142;
-                    this.mapY += this.speed / 1.4142;
-
-                    o.placeNewObstacle(this.direction);
-                    break;
+        _createClass(Skier, [{
+            key: 'setVars',
+            value: function setVars() {
+                this.direction = 5;
+                this.mapX = 0;
+                this.mapY = 0;
+                this.speed = 8;
+                this.level = 1;
             }
-            if (this.mapY > oldMapY) {
-                $('section#game-board .status span').html(gameStatus.playing);
-                $('section#game-board .score span').html(Math.ceil(this.mapY));
+        }, {
+            key: 'getSkierAsset',
+            value: function getSkierAsset(dir) {
+                return skierAsset[dir];
+            }
+        }, {
+            key: 'drawSkier',
+            value: function drawSkier() {
+                var skierImage = _facademediator2.default.assets.loadedAssets[this.getSkierAsset(this.direction)];
+                var x = (gameWidth - skierImage.width) / 2;
+                var y = (gameHeight - skierImage.height) / 2;
 
-                let newLevel = Math.ceil(this.mapY / levelCoverage);
-                if (newLevel === maxLevels + 1) {
-                    alert('Woohoo! You won the game.');
-                    this.direction = 1;
-                    this.publish('localStorage');
-                } else if (this.level < newLevel) {
-                    alert('New Level update');
-                    this.level = newLevel;
-                    $('section#game-board .level span').html(newLevel);
-                    levelCoverage += levelCoverage / 2;
-                    this.speed += this.speed / 2;
+                _facademediator2.default.canvas.context.drawImage(skierImage, x, y, skierImage.width, skierImage.height);
+            }
+        }, {
+            key: 'moveSkier',
+            value: function moveSkier(o) {
+                var oldMapY = this.mapY;
+                switch (this.direction) {
+                    case 2:
+                        this.mapX -= Math.round(this.speed / 1.4142);
+                        this.mapY += Math.round(this.speed / 1.4142);
+
+                        o.placeNewObstacle(this.direction);
+                        break;
+                    case 3:
+                        this.mapY += this.speed;
+
+                        o.placeNewObstacle(this.direction);
+                        break;
+                    case 4:
+                        this.mapX += this.speed / 1.4142;
+                        this.mapY += this.speed / 1.4142;
+
+                        o.placeNewObstacle(this.direction);
+                        break;
                 }
-                $('section#game-board .speed span').html(this.speed);
+                if (this.mapY > oldMapY) {
+                    $('section#game-board .status span').html(gameStatus.playing);
+                    $('section#game-board .score span').html(Math.ceil(this.mapY));
+
+                    var newLevel = Math.ceil(this.mapY / levelCoverage);
+                    if (newLevel === maxLevels + 1) {
+                        alert('Woohoo! You won the game.');
+                        this.direction = 1;
+                        this.publish('localStorage');
+                    } else if (this.level < newLevel) {
+                        alert('New Level update');
+                        this.level = newLevel;
+                        $('section#game-board .level span').html(newLevel);
+                        levelCoverage += levelCoverage / 2;
+                        this.speed += this.speed / 2;
+                    }
+                    $('section#game-board .speed span').html(this.speed);
+                }
             }
-        }
+        }, {
+            key: 'intersectRect',
+            value: function intersectRect(r1, r2) {
+                return !(r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top);
+            }
+        }, {
+            key: 'checkIfSkierHitObstacle',
+            value: function checkIfSkierHitObstacle(o) {
+                var _this = this;
 
-        intersectRect(r1, r2) {
-            return !(r2.left > r1.right || r2.right < r1.left || r2.top > r1.bottom || r2.bottom < r1.top);
-        }
-
-        checkIfSkierHitObstacle(o) {
-            const skierAssetName = this.getSkierAsset(this.direction);
-            const skierImage = facademediator.assets.loadedAssets[skierAssetName];
-            const skierRect = {
-                left: this.mapX + gameWidth / 2,
-                right: this.mapX + skierImage.width + gameWidth / 2,
-                top: this.mapY + skierImage.height - 5 + gameHeight / 2,
-                bottom: this.mapY + skierImage.height + gameHeight / 2
-            };
-
-            const collision = _.find(o.getObstacles, obstacle => {
-                const obstacleImage = facademediator.assets.loadedAssets[obstacle.type];
-                const obstacleRect = {
-                    left: obstacle.x,
-                    right: obstacle.x + obstacleImage.width,
-                    top: obstacle.y + obstacleImage.height - 5,
-                    bottom: obstacle.y + obstacleImage.height
+                var skierAssetName = this.getSkierAsset(this.direction);
+                var skierImage = _facademediator2.default.assets.loadedAssets[skierAssetName];
+                var skierRect = {
+                    left: this.mapX + gameWidth / 2,
+                    right: this.mapX + skierImage.width + gameWidth / 2,
+                    top: this.mapY + skierImage.height - 5 + gameHeight / 2,
+                    bottom: this.mapY + skierImage.height + gameHeight / 2
                 };
 
-                return this.intersectRect(skierRect, obstacleRect);
-            });
+                var collision = _.find(o.getObstacles, function (obstacle) {
+                    var obstacleImage = _facademediator2.default.assets.loadedAssets[obstacle.type];
+                    var obstacleRect = {
+                        left: obstacle.x,
+                        right: obstacle.x + obstacleImage.width,
+                        top: obstacle.y + obstacleImage.height - 5,
+                        bottom: obstacle.y + obstacleImage.height
+                    };
 
-            if (collision) {
-                if (this.direction > 0) {
-                    totalCollisions++;
-                    $('section#game-board .collisions span').html(this.totalCollisions);
-                    $('section#game-board .status span').html(gameStatus.crashed);
+                    return _this.intersectRect(skierRect, obstacleRect);
+                });
+
+                if (collision) {
+                    if (this.direction > 0) {
+                        totalCollisions++;
+                        $('section#game-board .collisions span').html(this.totalCollisions);
+                        $('section#game-board .status span').html(gameStatus.crashed);
+                    }
+                    this.direction = 0;
                 }
-                this.direction = 0;
             }
-        }
+        }, {
+            key: 'direction',
+            get: function get() {
+                return skierDirection;
+            },
+            set: function set(sd) {
+                skierDirection = sd;
+            }
+        }, {
+            key: 'level',
+            get: function get() {
+                return gameLevel;
+            },
+            set: function set(lvl) {
+                gameLevel = lvl;
+            }
+        }, {
+            key: 'mapX',
+            get: function get() {
+                return skierMapX;
+            },
+            set: function set(smx) {
+                skierMapX = smx;
+            }
+        }, {
+            key: 'mapY',
+            get: function get() {
+                return skierMapY;
+            },
+            set: function set(smy) {
+                skierMapY = smy;
+            }
+        }, {
+            key: 'speed',
+            get: function get() {
+                return skierSpeed;
+            },
+            set: function set(ss) {
+                skierSpeed = ss;
+            }
+        }, {
+            key: 'totalCollisions',
+            get: function get() {
+                return totalCollisions;
+            }
+        }]);
 
-        get totalCollisions() {
-            return totalCollisions;
-        }
-    }
+        return Skier;
+    }();
+
     return Skier;
-}(config.jQuery);
+}(_config2.default.jQuery);
 
-/* harmony default export */ var skier = (skier_Skier);
-// CONCATENATED MODULE: ./js/controls.js
+exports.default = Skier;
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-const { jQuery: controls_$, gameStatus: controls_gameStatus } = config;
-let pause = false;
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-class controls_Controls {
-    constructor() {
+var _config = __webpack_require__(0);
+
+var _config2 = _interopRequireDefault(_config);
+
+var _facademediator = __webpack_require__(1);
+
+var _facademediator2 = _interopRequireDefault(_facademediator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var $ = _config2.default.jQuery,
+    gameStatus = _config2.default.gameStatus;
+
+var pause = false;
+
+var Controls = function () {
+    function Controls() {
+        _classCallCheck(this, Controls);
+
         this.subscribe('initializeControls', this.initialize);
         this.subscribe('localStorage', this.updateScores);
     }
 
-    updateScores() {
-        window.localStorage.setItem(facademediator.user.name, JSON.stringify({
-            score: Math.ceil(facademediator.skier.mapY),
-            speed: Math.ceil(facademediator.skier.speed),
-            level: facademediator.skier.level
-        }));
-    }
-
-    left() {
-        if (facademediator.skier.direction === 1) {
-            facademediator.skier.mapX -= facademediator.skier.speed;
-            facademediator.publish('placeNewObstacle', facademediator.skier.direction);
-        } else if (facademediator.skier.direction > 1) {
-            facademediator.skier.direction -= 1;
-        } else {
-            facademediator.skier.direction = 0;
+    _createClass(Controls, [{
+        key: 'updateScores',
+        value: function updateScores() {
+            window.localStorage.setItem(_facademediator2.default.user.name, JSON.stringify({
+                score: Math.ceil(_facademediator2.default.skier.mapY),
+                speed: Math.ceil(_facademediator2.default.skier.speed),
+                level: _facademediator2.default.skier.level
+            }));
         }
-    }
-
-    right() {
-        if (facademediator.skier.direction === 5) {
-            facademediator.skier.mapX += facademediator.skier.speed;
-            facademediator.publish('placeNewObstacle', facademediator.skier.direction);
-        } else {
-            facademediator.skier.direction += 1;
-        }
-    }
-
-    up() {
-        if (facademediator.skier.direction === 1 || facademediator.skier.direction === 5) {
-            facademediator.skier.mapY -= facademediator.skier.speed;
-            facademediator.publish('placeNewObstacle', 6);
-        }
-    }
-
-    down() {
-        facademediator.skier.direction = 3;
-    }
-
-    pause_resume() {
-        if (this.isPaused) {
-            facademediator.skier.direction = 3;
-            controls_$('section#game-board .status span').html(controls_gameStatus.playing);
-        } else {
-            facademediator.skier.direction = 1;
-            controls_$('section#game-board .status span').html(controls_gameStatus.paused);
-        }
-        pause = !pause;
-    }
-
-    get isPaused() {
-        return pause;
-    }
-
-    initialize() {
-        controls_$(window).on('keydown', event => {
-            switch (event.which) {
-                case 37:
-                    // left
-                    this.left();
-                    event.preventDefault();
-                    break;
-                case 39:
-                    // right
-                    this.right();
-                    event.preventDefault();
-                    break;
-                case 38:
-                    // up
-                    this.up();
-                    event.preventDefault();
-                    break;
-                case 40:
-                    // down
-                    this.down();
-                    event.preventDefault();
-                    break;
-                case 32:
-                    // pause
-                    this.pause_resume();
-                    event.preventDefault();
-                    break;
-            }
-        });
-
-        controls_$(document).on('click', 'ul.notifications li.reset', function (e) {
-            e.preventDefault();
-            window.location.reload();
-        });
-
-        controls_$(document).on('click', 'ul.notifications li.rules', function (e) {
-            e.preventDefault();
-            let display = controls_$(this).find('.notification-menu').css('display');
-            if (display === 'none') {
-                controls_$(this).find('.notification-menu').css('display', 'block');
+    }, {
+        key: 'left',
+        value: function left() {
+            if (_facademediator2.default.skier.direction === 1) {
+                _facademediator2.default.skier.mapX -= _facademediator2.default.skier.speed;
+                _facademediator2.default.publish('placeNewObstacle', _facademediator2.default.skier.direction);
+            } else if (_facademediator2.default.skier.direction > 1) {
+                _facademediator2.default.skier.direction -= 1;
             } else {
-                controls_$(this).find('.notification-menu').css('display', 'none');
+                _facademediator2.default.skier.direction = 0;
             }
-        });
+        }
+    }, {
+        key: 'right',
+        value: function right() {
+            if (_facademediator2.default.skier.direction === 5) {
+                _facademediator2.default.skier.mapX += _facademediator2.default.skier.speed;
+                _facademediator2.default.publish('placeNewObstacle', _facademediator2.default.skier.direction);
+            } else {
+                _facademediator2.default.skier.direction += 1;
+            }
+        }
+    }, {
+        key: 'up',
+        value: function up() {
+            if (_facademediator2.default.skier.direction === 1 || _facademediator2.default.skier.direction === 5) {
+                _facademediator2.default.skier.mapY -= _facademediator2.default.skier.speed;
+                _facademediator2.default.publish('placeNewObstacle', 6);
+            }
+        }
+    }, {
+        key: 'down',
+        value: function down() {
+            _facademediator2.default.skier.direction = 3;
+        }
+    }, {
+        key: 'pause_resume',
+        value: function pause_resume() {
+            if (this.isPaused) {
+                _facademediator2.default.skier.direction = 3;
+                $('section#game-board .status span').html(gameStatus.playing);
+            } else {
+                _facademediator2.default.skier.direction = 1;
+                $('section#game-board .status span').html(gameStatus.paused);
+            }
+            pause = !pause;
+        }
+    }, {
+        key: 'initialize',
+        value: function initialize() {
+            var _this = this;
 
-        controls_$(document).on('click', 'ul.notifications li.board', function (e) {
-            e.preventDefault();
-            let display = controls_$(this).find('.notification-menu').css('display');
-            if (display === 'none') {
-                controls_$(this).find('.notification-menu').css('display', 'block');
-                let tr = '';
-                for (let i = 0; i < localStorage.length; i++) {
-                    let key = localStorage.key(i);
-                    let val = JSON.parse(localStorage.getItem(key));
-                    tr += `<tr>
-                            <td>${key}</td><td>${val.speed}</td><td>${val.level}</td><td>${val.score}</td>
-                        </tr>`;
+            $(window).on('keydown', function (event) {
+                switch (event.which) {
+                    case 37:
+                        // left
+                        _this.left();
+                        event.preventDefault();
+                        break;
+                    case 39:
+                        // right
+                        _this.right();
+                        event.preventDefault();
+                        break;
+                    case 38:
+                        // up
+                        _this.up();
+                        event.preventDefault();
+                        break;
+                    case 40:
+                        // down
+                        _this.down();
+                        event.preventDefault();
+                        break;
+                    case 32:
+                        // pause
+                        _this.pause_resume();
+                        event.preventDefault();
+                        break;
                 }
-                controls_$(this).find('table tbody').html(tr);
-            } else {
-                controls_$(this).find('.notification-menu').css('display', 'none');
-            }
-        });
-    }
-}
+            });
 
-/* harmony default export */ var controls = (controls_Controls);
-// CONCATENATED MODULE: ./js/obstacles.js
+            $(document).on('click', 'ul.notifications li.reset', function (e) {
+                e.preventDefault();
+                window.location.reload();
+            });
+
+            $(document).on('click', 'ul.notifications li.rules', function (e) {
+                e.preventDefault();
+                var display = $(this).find('.notification-menu').css('display');
+                if (display === 'none') {
+                    $(this).find('.notification-menu').css('display', 'block');
+                } else {
+                    $(this).find('.notification-menu').css('display', 'none');
+                }
+            });
+
+            $(document).on('click', 'ul.notifications li.board', function (e) {
+                e.preventDefault();
+                var display = $(this).find('.notification-menu').css('display');
+                if (display === 'none') {
+                    $(this).find('.notification-menu').css('display', 'block');
+                    var tr = '';
+                    for (var i = 0; i < localStorage.length; i++) {
+                        var key = localStorage.key(i);
+                        var val = JSON.parse(localStorage.getItem(key));
+                        tr += '<tr>\n                            <td>' + key + '</td><td>' + val.speed + '</td><td>' + val.level + '</td><td>' + val.score + '</td>\n                        </tr>';
+                    }
+                    $(this).find('table tbody').html(tr);
+                } else {
+                    $(this).find('.notification-menu').css('display', 'none');
+                }
+            });
+        }
+    }, {
+        key: 'isPaused',
+        get: function get() {
+            return pause;
+        }
+    }]);
+
+    return Controls;
+}();
+
+exports.default = Controls;
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
 
-const obstacles_Obstacles = function ($) {
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-    const { _, gameWidth, gameHeight } = config;
-    const obstacleTypes = ['tree', 'treeCluster', 'rock1', 'rock2'];
+var _config = __webpack_require__(0);
 
-    class Obstacles {
-        constructor() {
+var _config2 = _interopRequireDefault(_config);
+
+var _facademediator = __webpack_require__(1);
+
+var _facademediator2 = _interopRequireDefault(_facademediator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Obstacles = function ($) {
+    var _ = _config2.default._,
+        gameWidth = _config2.default.gameWidth,
+        gameHeight = _config2.default.gameHeight;
+
+    var obstacleTypes = ['tree', 'treeCluster', 'rock1', 'rock2'];
+
+    var Obstacles = function () {
+        function Obstacles() {
+            _classCallCheck(this, Obstacles);
+
             this.initialize();
             this.subscribe('placeInitialObstacles', this.placeInitialObstacles);
             this.subscribe('placeNewObstacle', this.placeNewObstacle);
         }
 
-        initialize() {
-            this.obstacles = [];
-        }
+        _createClass(Obstacles, [{
+            key: 'initialize',
+            value: function initialize() {
+                this.obstacles = [];
+            }
+        }, {
+            key: 'drawObstacles',
+            value: function drawObstacles() {
+                var newObstacles = [];
 
-        get getObstacles() {
-            return this.obstacles;
-        }
+                _.each(this.obstacles, function (obstacle) {
+                    var obstacleImage = _facademediator2.default.assets.loadedAssets[obstacle.type];
+                    var x = obstacle.x - _facademediator2.default.skier.mapX - obstacleImage.width / 2;
+                    var y = obstacle.y - _facademediator2.default.skier.mapY - obstacleImage.height / 2;
 
-        drawObstacles() {
-            const newObstacles = [];
+                    if (x < -100 || x > gameWidth + 50 || y < -100 || y > gameHeight + 50) {
+                        return;
+                    }
 
-            _.each(this.obstacles, obstacle => {
-                const obstacleImage = facademediator.assets.loadedAssets[obstacle.type];
-                const x = obstacle.x - facademediator.skier.mapX - obstacleImage.width / 2;
-                const y = obstacle.y - facademediator.skier.mapY - obstacleImage.height / 2;
+                    _facademediator2.default.canvas.context.drawImage(obstacleImage, x, y, obstacleImage.width, obstacleImage.height);
 
-                if (x < -100 || x > gameWidth + 50 || y < -100 || y > gameHeight + 50) {
+                    newObstacles.push(obstacle);
+                });
+
+                this.obstacles = newObstacles;
+            }
+        }, {
+            key: 'placeInitialObstacles',
+            value: function placeInitialObstacles() {
+                var numberObstacles = Math.ceil(_.random(5, 7) * (gameWidth / 800) * (gameHeight / 500));
+
+                var minX = -50;
+                var maxX = gameWidth + 50;
+                var minY = gameHeight / 2 + 100;
+                var maxY = gameHeight + 50;
+
+                for (var i = 0; i < numberObstacles; i++) {
+                    this.placeRandomObstacle(minX, maxX, minY, maxY);
+                }
+
+                this.obstacles = _.sortBy(this.obstacles, function (obstacle) {
+                    var obstacleImage = _facademediator2.default.assets.loadedAssets[obstacle.type];
+                    return obstacle.y + obstacleImage.height;
+                });
+            }
+        }, {
+            key: 'placeNewObstacle',
+            value: function placeNewObstacle(dir) {
+                var shouldPlaceObstacle = _.random(1, 8);
+                if (shouldPlaceObstacle !== 8) {
                     return;
                 }
 
-                facademediator.canvas.context.drawImage(obstacleImage, x, y, obstacleImage.width, obstacleImage.height);
+                var leftEdge = _facademediator2.default.skier.mapX;
+                var rightEdge = _facademediator2.default.skier.mapX + gameWidth;
+                var topEdge = _facademediator2.default.skier.mapY;
+                var bottomEdge = _facademediator2.default.skier.mapY + gameHeight;
 
-                newObstacles.push(obstacle);
-            });
-
-            this.obstacles = newObstacles;
-        }
-
-        placeInitialObstacles() {
-            const numberObstacles = Math.ceil(_.random(5, 7) * (gameWidth / 800) * (gameHeight / 500));
-
-            const minX = -50;
-            const maxX = gameWidth + 50;
-            const minY = gameHeight / 2 + 100;
-            const maxY = gameHeight + 50;
-
-            for (var i = 0; i < numberObstacles; i++) {
-                this.placeRandomObstacle(minX, maxX, minY, maxY);
+                switch (dir) {
+                    case 1:
+                        // left
+                        this.placeRandomObstacle(leftEdge - 50, leftEdge, topEdge, bottomEdge);
+                        break;
+                    case 2:
+                        // left down
+                        this.placeRandomObstacle(leftEdge - 50, leftEdge, topEdge, bottomEdge);
+                        this.placeRandomObstacle(leftEdge, rightEdge, bottomEdge, bottomEdge + 50);
+                        break;
+                    case 3:
+                        // down
+                        this.placeRandomObstacle(leftEdge, rightEdge, bottomEdge, bottomEdge + 50);
+                        break;
+                    case 4:
+                        // right down
+                        this.placeRandomObstacle(rightEdge, rightEdge + 50, topEdge, bottomEdge);
+                        this.placeRandomObstacle(leftEdge, rightEdge, bottomEdge, bottomEdge + 50);
+                        break;
+                    case 5:
+                        // right
+                        this.placeRandomObstacle(rightEdge, rightEdge + 50, topEdge, bottomEdge);
+                        break;
+                    case 6:
+                        // up
+                        this.placeRandomObstacle(leftEdge, rightEdge, topEdge - 50, topEdge);
+                        break;
+                }
             }
+        }, {
+            key: 'placeRandomObstacle',
+            value: function placeRandomObstacle(minX, maxX, minY, maxY) {
+                var obstacleIndex = _.random(0, obstacleTypes.length - 1);
 
-            this.obstacles = _.sortBy(this.obstacles, obstacle => {
-                const obstacleImage = facademediator.assets.loadedAssets[obstacle.type];
-                return obstacle.y + obstacleImage.height;
-            });
-        }
+                var position = this.calculateOpenPosition(minX, maxX, minY, maxY);
 
-        placeNewObstacle(dir) {
-            const shouldPlaceObstacle = _.random(1, 8);
-            if (shouldPlaceObstacle !== 8) {
-                return;
+                this.obstacles.push({
+                    type: obstacleTypes[obstacleIndex],
+                    x: position.x,
+                    y: position.y
+                });
             }
+        }, {
+            key: 'calculateOpenPosition',
+            value: function calculateOpenPosition(minX, maxX, minY, maxY) {
+                var x = _.random(minX, maxX);
+                var y = _.random(minY, maxY);
 
-            const leftEdge = facademediator.skier.mapX;
-            const rightEdge = facademediator.skier.mapX + gameWidth;
-            const topEdge = facademediator.skier.mapY;
-            const bottomEdge = facademediator.skier.mapY + gameHeight;
+                var foundCollision = _.find(this.obstacles, function (obstacle) {
+                    return x > obstacle.x - 50 && x < obstacle.x + 50 && y > obstacle.y - 50 && y < obstacle.y + 50;
+                });
 
-            switch (dir) {
-                case 1:
-                    // left
-                    this.placeRandomObstacle(leftEdge - 50, leftEdge, topEdge, bottomEdge);
-                    break;
-                case 2:
-                    // left down
-                    this.placeRandomObstacle(leftEdge - 50, leftEdge, topEdge, bottomEdge);
-                    this.placeRandomObstacle(leftEdge, rightEdge, bottomEdge, bottomEdge + 50);
-                    break;
-                case 3:
-                    // down
-                    this.placeRandomObstacle(leftEdge, rightEdge, bottomEdge, bottomEdge + 50);
-                    break;
-                case 4:
-                    // right down
-                    this.placeRandomObstacle(rightEdge, rightEdge + 50, topEdge, bottomEdge);
-                    this.placeRandomObstacle(leftEdge, rightEdge, bottomEdge, bottomEdge + 50);
-                    break;
-                case 5:
-                    // right
-                    this.placeRandomObstacle(rightEdge, rightEdge + 50, topEdge, bottomEdge);
-                    break;
-                case 6:
-                    // up
-                    this.placeRandomObstacle(leftEdge, rightEdge, topEdge - 50, topEdge);
-                    break;
+                if (foundCollision) {
+                    return this.calculateOpenPosition(minX, maxX, minY, maxY);
+                } else {
+                    return {
+                        x: x,
+                        y: y
+                    };
+                }
             }
-        }
-
-        placeRandomObstacle(minX, maxX, minY, maxY) {
-            const obstacleIndex = _.random(0, obstacleTypes.length - 1);
-
-            const position = this.calculateOpenPosition(minX, maxX, minY, maxY);
-
-            this.obstacles.push({
-                type: obstacleTypes[obstacleIndex],
-                x: position.x,
-                y: position.y
-            });
-        }
-
-        calculateOpenPosition(minX, maxX, minY, maxY) {
-            const x = _.random(minX, maxX);
-            const y = _.random(minY, maxY);
-
-            const foundCollision = _.find(this.obstacles, obstacle => {
-                return x > obstacle.x - 50 && x < obstacle.x + 50 && y > obstacle.y - 50 && y < obstacle.y + 50;
-            });
-
-            if (foundCollision) {
-                return this.calculateOpenPosition(minX, maxX, minY, maxY);
-            } else {
-                return {
-                    x: x,
-                    y: y
-                };
+        }, {
+            key: 'getObstacles',
+            get: function get() {
+                return this.obstacles;
             }
-        }
-    }
+        }]);
+
+        return Obstacles;
+    }();
 
     return Obstacles;
-}(config.jQuery);
+}(_config2.default.jQuery);
 
-/* harmony default export */ var obstacles = (obstacles_Obstacles);
-// CONCATENATED MODULE: ./js/user.js
-class User {
-    constructor() {
+exports.default = Obstacles;
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var User = function () {
+    function User() {
+        _classCallCheck(this, User);
+
         this.subscribe('addUser', this.addUser);
     }
 
-    addUser(name) {
-        let n = name.replace(/\b\w/g, l => l.toUpperCase());
-        this.name = n;
-        $('section#game-board .user span').html(n);
-    }
-}
-
-/* harmony default export */ var user = (User);
-// CONCATENATED MODULE: ./js/facademediator.js
-
-
-
-
-
-
-
-
-
-const facademediator_FacadeMediator = function (window, mediator) {
-    const FacadeMediator = window.FacadeMediator || {};
-
-    FacadeMediator.subscribe = mediator.subscribe;
-    FacadeMediator.publish = mediator.publish;
-    FacadeMediator.installTo = mediator.installTo;
-
-    FacadeMediator.canvas = js_canvas;
-
-    FacadeMediator.installTo(js_assets.prototype);
-    FacadeMediator.assets = new js_assets();
-
-    FacadeMediator.installTo(skier.prototype);
-    FacadeMediator.skier = new skier();
-
-    FacadeMediator.installTo(controls.prototype);
-    FacadeMediator.controls = new controls();
-
-    FacadeMediator.installTo(obstacles.prototype);
-    FacadeMediator.obstacles = new obstacles();
-
-    FacadeMediator.installTo(user.prototype);
-    FacadeMediator.user = new user();
-
-    FacadeMediator.gameLoop = function () {
-        if (FacadeMediator.skier.totalCollisions === config.collisionAttempts) {
-            alert('GAME OVER'); //update scores in localstorage
-            FacadeMediator.publish('localStorage');
-            return;
+    _createClass(User, [{
+        key: 'addUser',
+        value: function addUser(name) {
+            var n = name.replace(/\b\w/g, function (l) {
+                return l.toUpperCase();
+            });
+            this.name = n;
+            $('section#game-board .user span').html(n);
         }
-        FacadeMediator.canvas.context.save();
-        // Retina support
-        FacadeMediator.canvas.context.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }]);
 
-        FacadeMediator.canvas.clearCanvas();
+    return User;
+}();
 
-        FacadeMediator.skier.moveSkier(FacadeMediator.obstacles);
-
-        FacadeMediator.skier.checkIfSkierHitObstacle(FacadeMediator.obstacles);
-
-        FacadeMediator.skier.drawSkier();
-
-        FacadeMediator.obstacles.drawObstacles();
-
-        FacadeMediator.canvas.context.restore();
-
-        window.requestAnimationFrame(FacadeMediator.gameLoop);
-    };
-
-    return FacadeMediator;
-}(window, js_mediator);
-
-/* harmony default export */ var facademediator = (facademediator_FacadeMediator);
-// CONCATENATED MODULE: ./js/workflow.js
-
-
-class workflow_WorkFlowManager {
-    constructor() {
-        facademediator.subscribe('onStart', () => {
-            let name = null;
-            while (name === null || name === '') {
-                name = prompt("Please enter your name", "");
-            }
-            facademediator.publish('addUser', name);
-            facademediator.publish('initializeControls');
-            facademediator.publish('loadAssets');
-        });
-    }
-
-    start() {
-        facademediator.publish('onStart');
-    }
-}
-
-/* harmony default export */ var workflow = (workflow_WorkFlowManager);
-// CONCATENATED MODULE: ./js/index.js
-
-new workflow().start();
+exports.default = User;
 
 /***/ })
 /******/ ]);

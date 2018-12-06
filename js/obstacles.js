@@ -54,7 +54,7 @@ const Obstacles = (function($){
             const minY = gameHeight / 2 + 100;
             const maxY = gameHeight + 50;
     
-            for(var i = 0; i < numberObstacles; i++) {
+            for(let i = 0; i < numberObstacles; i++) {
                 this.placeRandomObstacle(minX, maxX, minY, maxY);
             }
             

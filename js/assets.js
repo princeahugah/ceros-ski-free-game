@@ -1,7 +1,6 @@
 import config from './config';
-import FacadeMediator from './facademediator';
 
-const Assets = (function($){
+export default (function($){
     const assets = {
         'skierCrash' : 'img/skier_crash.png',
         'skierLeft' : 'img/skier_left.png',
@@ -16,6 +15,7 @@ const Assets = (function($){
     };
 
     const loadedAssets = {};
+    const { _ } = config;
 
     class Assets{
         constructor(){
@@ -27,11 +27,11 @@ const Assets = (function($){
         }
 
         loadAssets(){
-            var assetPromises = [];
+            const assetPromises = [];
     
             _.each(assets, function(asset, assetName) {
-                var assetImage = new Image();
-                var assetDeferred = new $.Deferred();
+                const assetImage = new Image();
+                const assetDeferred = new $.Deferred();
     
                 assetImage.onload = function() {
                     assetImage.width /= 2;
@@ -48,15 +48,13 @@ const Assets = (function($){
             return $.when.apply($, assetPromises);
         }
 
-        resolveAssets(){
+        resolveAssets(gameLoop){
             this.loadAssets().then(() => {
-                FacadeMediator.publish('placeInitialObstacles');
-                requestAnimationFrame(FacadeMediator.gameLoop);
+                this.publish('placeInitialObstacles');
+                requestAnimationFrame(gameLoop);
             });
         }
     }
 
     return Assets;
 })(config.jQuery);
-
-export default Assets;

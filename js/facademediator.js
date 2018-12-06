@@ -7,7 +7,7 @@ import Controls from './controls';
 import Obstacles from './obstacles';
 import User from './user';
 
-const FacadeMediator = (function(window, mediator) {
+export default (function(window, mediator) {
     const FacadeMediator = window.FacadeMediator || {};
 
     FacadeMediator.subscribe = mediator.subscribe;
@@ -58,5 +58,3 @@ const FacadeMediator = (function(window, mediator) {
 
     return FacadeMediator;
 })(window, Mediator);
-
-export default FacadeMediator;

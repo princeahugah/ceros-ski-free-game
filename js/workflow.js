@@ -9,7 +9,7 @@ class WorkFlowManager {
             }
             FacadeMediator.publish('addUser', name);
             FacadeMediator.publish('initializeControls');
-            FacadeMediator.publish('loadAssets');
+            FacadeMediator.publish('loadAssets', FacadeMediator.gameLoop);
         });
     }
 

@@ -10,7 +10,7 @@ const Config = {
         crashed: 'Crashed'
     },
     collisionAttempts: 5,
-    levelCoverage: 1000,
+    levelCoverage: 10000,
     maxLevels: 10
 };
 

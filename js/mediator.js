@@ -1,4 +1,4 @@
-const Mediator = (function(){
+export default (function(){
     
     const messages = {};
 
@@ -34,5 +34,3 @@ const Mediator = (function(){
     
     return Mediator;
 })();
-
-export default Mediator;

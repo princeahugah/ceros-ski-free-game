@@ -1,4 +1,5 @@
 **/.DS_Store
 .idea
 .ts
+.babel.rc
 node_modules
