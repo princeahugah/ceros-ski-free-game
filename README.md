@@ -1,3 +1,36 @@
+# Bug Fix
+The left bug has been fixed and the game no longer crasheds. The skier gets up and is facing to the left
+
+# New Features
+- Your Name
+  When the game first loads, you will be requested to enter your name. Please do so, you don't want to miss the league table.
+  
+-  Game Status: 
+    - Start: This status shows up when the game first loads. It indicates your readiness to start the game.
+    - Playing: Press an arrow key to start playing the game. This changes the status of the game from **Start** to **Playing**. 
+    - Pause/Resume: You can pause the game by pressing the **space bar**. When the game is paused, you can press the space bar again to resume the game.
+    - Crashed: The status of the game shows **Crashed** when you hit an obstacle.
+  
+-  Game Score
+    - The score is calculated based on total the distance covered. The distance covered is how far ski went on the Y axis.
+    
+-  Game Level
+    - There are 10 levels in this game. Each level requires that you cover a certain distance. When you move from one level to the other, the distance to be covered for the new level is recalculated bearing in mind your speed since it also increases. You win the game when you finish the 10th level. You get an alert when you transition from one level to the other.
+    
+-  Game Speed
+    - The speed of the game increases when you move from one level to the other. The new speed is 50% more of the old speed and it's cumulative.
+    
+-  Total Collisions
+    - A counter is maintained to track how many times you hit an obstacle. The game ends after the 5th collision. You get an alert telling it's **Game Over**.
+    
+-  Game Controls
+    - Use the **left, right, up and down** arrow keys as your controls. There are 3 buttons to the top right of the game window. The first is the leader board button. Next is the Game rules button. The last button is to reset the game.
+    - The leader board keeps track of all the users who played the game. It keeps track of the user who played the game, his/her speed, level and score. Toggle this button to view the league table.
+    - The game rules button basically informs you on how to use the game.
+    - The reset button restarts the game so another user can also play.
+    
+
+
 # Ceros Ski Code Challenge
 
 Welcome to the Ceros Code Challenge - Ski Edition!
@@ -50,40 +83,3 @@ you want and show us what you can do!
 
 We are looking forward to see what you come up with!
 
-
-
-
-====== my strategy =========
-- fixed the left key bug
-- ensure code is production ready
-- using a module, facade, mediator pattern
-- added a score board
-
-- New Features
-  - status: start, pause, playing, crashed - done
-  - pause/resume - done
-  - total collisions - done
-  - distance covered skierMapY - score - done
-  - gameover - collisionAttempts = 5 - done*
-  - level update - done
-  - increase speed after covering a certain distance - done
-  - increase level coverage - done
-  - levels - distance metric - done
-  - level completion - maxLevel=10, levelCoverage=10000 - done
-  - localstorage details - set when gameOver, won game - done
-  - resetGame - call setVars - done
-  - leaderboard - done
-  - rules - done
-
-  - readme
-  - comments in code
-  - unit test **
-  - setup on heroku and github **
-  - feed hungry rhino **
-  - jumps **
-
-===
-- use jquery
-- use es6 classes and imports
-- use closures to set privacy
-- module, facade, mediator pattern
