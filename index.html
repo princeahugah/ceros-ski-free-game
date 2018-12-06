@@ -1,0 +1,119 @@
+<html lang="en">
+<head>
+    <title>Rhino-Ski</title>
+
+    <link rel="stylesheet" type="text/css" href="css/game.css">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+    <section id="game-board">
+        <div class="lft">
+            <div class="score">Score:<span>0</span></div>
+            <div class="status">Status:<span>Start</span></div>
+            <div class="speed">Speed:<span>0</span></div>
+            <div class="collisions">Total Collisions:<span>0</span></div>
+            <div class="level">Level:<span>1</span></div>
+        </div>
+        <div class="rgt">
+            <div class="user">Welcome, <span></span></div>
+            <ul class="notifications">
+                <li class="board" title="Toggle Leader Board">
+                    <a href="#" class="dropdown-toggle notification-icon">
+                        <i class="fas fa-award"></i>
+                    </a>
+    
+                    <div class="dropdown-menu notification-menu large" x-placement="bottom-start" style="display:none; position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
+                        <div class="notification-title">
+                            Leader Board
+                        </div>
+                        <div class="content">
+                            <ul>
+                                <li>
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Speed</th>
+                                                <th>Level</th>
+                                                <th>Score</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="rules" title="Toggle Game Rules">
+                    <a href="#" class="dropdown-toggle notification-icon">
+                        <i class="fas fa-tasks"></i>
+                    </a>
+    
+                    <div class="dropdown-menu notification-menu large" x-placement="bottom-start" style="display:none; position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 30px, 0px);">
+                        <div class="notification-title">
+                            Game Rules
+                        </div>
+                        <div class="content">
+                            <ul>
+                                <li>
+                                    <p>
+                                        <span class="title">Your Name</span>
+                                        <span class="message">Please enter your name when requested to do so. You don't want to miss the league table.</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        <span class="title">Game Status</span>
+                                        <span class="message">The game can have the status <strong>start, pause, playing, crashed</strong>. To pause, press the space bar</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        <span class="title">Game Score</span>
+                                        <span class="message">The score is calculated based on total the distance traveled.</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        <span class="title">Game Level</span>
+                                        <span class="message">There are 10 levels in this game. Each level requires that you cover a certain distance. When you move from one level to the other, the distance to be covered for the new level is recalculated since your speed also increases. You win the game when you finish the 10th level.</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        <span class="title">Game Speed</span>
+                                        <span class="message">The speed of the game increases when you move from one level to the other. The new speed is 50% more of the old speed.</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        <span class="title">Total Collisions</span>
+                                        <span class="message">The game allows you 5 collisions. The game ends after the 5th collision.</span>
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>
+                                        <span class="title">Game Controls</span>
+                                        <span class="message">Use the <strong>left, right, up and down</strong> as your controls. There are 3 buttons at your top right. The first is the leader board button. Next is the Game rules button. The last button is to reset the game.</span>
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li class="reset" title="Reset Game">
+                    <a href="#" class="notification-icon">
+                        <i class="fas fa-power-off"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </section>
+    <script type="text/javascript" src="dist/bundle.nomin.js"></script>
+</body>
+</html>
