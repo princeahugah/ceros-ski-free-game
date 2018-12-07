@@ -1,5 +1,4 @@
 import config from './config';
-import FacadeMediator from './facademediator';
 
 const Obstacles = (function($){
 
@@ -12,7 +11,10 @@ const Obstacles = (function($){
     ];
     
     class Obstacles {
-        constructor(){
+        constructor(skier, assets, context){
+            this.skier = skier;
+            this.assets = assets;
+            this.ctx = context;
             this.initialize();
             this.subscribe('placeInitialObstacles', this.placeInitialObstacles);
             this.subscribe('placeNewObstacle', this.placeNewObstacle);
@@ -30,15 +32,15 @@ const Obstacles = (function($){
             const newObstacles = [];
     
             _.each(this.obstacles, obstacle => {
-                const obstacleImage = FacadeMediator.assets.loadedAssets[obstacle.type];
-                const x = obstacle.x - FacadeMediator.skier.mapX - obstacleImage.width / 2;
-                const y = obstacle.y - FacadeMediator.skier.mapY - obstacleImage.height / 2;
+                const obstacleImage = this.assets.loadedAssets[obstacle.type];
+                const x = obstacle.x - this.skier.mapX - obstacleImage.width / 2;
+                const y = obstacle.y - this.skier.mapY - obstacleImage.height / 2;
     
                 if(x < -100 || x > gameWidth + 50 || y < -100 || y > gameHeight + 50) {
                     return;
                 }
     
-                FacadeMediator.canvas.context.drawImage(obstacleImage, x, y, obstacleImage.width, obstacleImage.height);
+                this.ctx.drawImage(obstacleImage, x, y, obstacleImage.width, obstacleImage.height);
     
                 newObstacles.push(obstacle);
             });
@@ -57,23 +59,29 @@ const Obstacles = (function($){
             for(let i = 0; i < numberObstacles; i++) {
                 this.placeRandomObstacle(minX, maxX, minY, maxY);
             }
-            
+            this.sortObstacles();
+        }
+
+        sortObstacles(){
             this.obstacles = _.sortBy(this.obstacles, obstacle => {
-                const obstacleImage = FacadeMediator.assets.loadedAssets[obstacle.type];
+                const obstacleImage = this.assets.loadedAssets[obstacle.type];
                 return obstacle.y + obstacleImage.height;
             });
         }
     
+        randomize(){
+            return _.random(1, 8);
+        }
         placeNewObstacle(dir){
-            const shouldPlaceObstacle = _.random(1, 8);
+            const shouldPlaceObstacle = this.randomize();
             if(shouldPlaceObstacle !== 8) {
                 return;
             }
     
-            const leftEdge = FacadeMediator.skier.mapX;
-            const rightEdge = FacadeMediator.skier.mapX + gameWidth;
-            const topEdge = FacadeMediator.skier.mapY;
-            const bottomEdge = FacadeMediator.skier.mapY + gameHeight;
+            const leftEdge = this.skier.mapX;
+            const rightEdge = this.skier.mapX + gameWidth;
+            const topEdge = this.skier.mapY;
+            const bottomEdge = this.skier.mapY + gameHeight;
     
             switch(dir) {
                 case 1: // left
@@ -114,10 +122,7 @@ const Obstacles = (function($){
         calculateOpenPosition(minX, maxX, minY, maxY){
             const x = _.random(minX, maxX);
             const y = _.random(minY, maxY);
-    
-            const foundCollision = _.find(this.obstacles, obstacle => {
-                return x > (obstacle.x - 50) && x < (obstacle.x + 50) && y > (obstacle.y - 50) && y < (obstacle.y + 50);
-            });
+            const foundCollision = this.hasCollided(x, y);
     
             if(foundCollision) {
                 return this.calculateOpenPosition(minX, maxX, minY, maxY);
@@ -128,6 +133,12 @@ const Obstacles = (function($){
                     y: y
                 }
             }
+        }
+
+        hasCollided(x, y){
+            return _.find(this.obstacles, obstacle => {
+                return x > (obstacle.x - 50) && x < (obstacle.x + 50) && y > (obstacle.y - 50) && y < (obstacle.y + 50);
+            });
         }
     }
 

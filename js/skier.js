@@ -1,7 +1,6 @@
 import config from './config';
-import FacadeMediator from './facademediator';
 
-const Skier = (function($){
+export default (function($){
     const { gameStatus, maxLevels, gameWidth, gameHeight } = config;
     let { levelCoverage } = config;
     const skierAsset = [
@@ -22,7 +21,9 @@ const Skier = (function($){
 
     class Skier {
     
-        constructor(){
+        constructor(assets, context){
+            this.ctx = context;
+            this.assets = assets;
             this.setVars();
             $('section#game-board .speed span').html(this.speed);
         }
@@ -80,11 +81,11 @@ const Skier = (function($){
         }
 
         drawSkier(){
-            const skierImage = FacadeMediator.assets.loadedAssets[ this.getSkierAsset( this.direction ) ];
+            const skierImage = this.assets.loadedAssets[ this.getSkierAsset( this.direction ) ];
             const x = (gameWidth - skierImage.width) / 2;
             const y = (gameHeight - skierImage.height) / 2;
     
-            FacadeMediator.canvas.context.drawImage(skierImage, x, y, skierImage.width, skierImage.height);
+            this.ctx.drawImage(skierImage, x, y, skierImage.width, skierImage.height);
         }
 
         moveSkier(o){
@@ -138,7 +139,7 @@ const Skier = (function($){
 
         checkIfSkierHitObstacle(o){
             const skierAssetName = this.getSkierAsset( this.direction );
-            const skierImage = FacadeMediator.assets.loadedAssets[skierAssetName];
+            const skierImage = this.assets.loadedAssets[skierAssetName];
             const skierRect = {
                 left: this.mapX + gameWidth / 2,
                 right: this.mapX + skierImage.width + gameWidth / 2,
@@ -147,7 +148,7 @@ const Skier = (function($){
             };
     
             const collision = _.find(o.getObstacles, obstacle => {
-                const obstacleImage = FacadeMediator.assets.loadedAssets[obstacle.type];
+                const obstacleImage = this.assets.loadedAssets[obstacle.type];
                 const obstacleRect = {
                     left: obstacle.x,
                     right: obstacle.x + obstacleImage.width,
@@ -174,5 +175,3 @@ const Skier = (function($){
     }
     return Skier;
 })(config.jQuery);
-
-export default Skier;

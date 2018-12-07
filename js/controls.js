@@ -1,64 +1,65 @@
 import config from './config';
-import FacadeMediator from './facademediator';
 
 const { jQuery: $, gameStatus } = config;
 let pause = false;
 
-class Controls {
-    constructor(){
+export default class Controls {
+    constructor(user, skier){
+        this.skier = skier;
+        this.user = user;
         this.subscribe('initializeControls', this.initialize);
         this.subscribe('localStorage', this.updateScores);
     }
 
     updateScores(){
-        window.localStorage.setItem(FacadeMediator.user.name, JSON.stringify({
-            score: Math.ceil(FacadeMediator.skier.mapY),
-            speed: Math.ceil(FacadeMediator.skier.speed),
-            level: FacadeMediator.skier.level
+        window.localStorage.setItem(this.user.name, JSON.stringify({
+            score: Math.ceil(this.skier.mapY),
+            speed: Math.ceil(this.skier.speed),
+            level: this.skier.level
         }));
     }
 
     left(){
-        if(FacadeMediator.skier.direction === 1) {
-            FacadeMediator.skier.mapX -= FacadeMediator.skier.speed;
-            FacadeMediator.publish('placeNewObstacle', FacadeMediator.skier.direction);
+        if(this.skier.direction === 1) {
+            this.skier.mapX -= this.skier.speed;
+            this.publish('placeNewObstacle', this.skier.direction);
         }
-        else if(FacadeMediator.skier.direction > 1){
-            FacadeMediator.skier.direction -= 1;
+        else if(this.skier.direction > 1){
+            this.skier.direction -= 1;
         }
         else {
-            FacadeMediator.skier.direction = 0;
+            this.skier.direction = 0;
         }
     }
 
     right(){
-        if(FacadeMediator.skier.direction === 5) {
-            FacadeMediator.skier.mapX += FacadeMediator.skier.speed;
-            FacadeMediator.publish('placeNewObstacle', FacadeMediator.skier.direction);
+        if(this.skier.direction === 5) {
+            this.skier.mapX += this.skier.speed;
+            this.publish('placeNewObstacle', this.skier.direction);
         }
         else {
-            FacadeMediator.skier.direction += 1;
+            this.skier.direction += 1;
         }
     }
 
     up(){
-        if(FacadeMediator.skier.direction === 1 || FacadeMediator.skier.direction === 5) {
-            FacadeMediator.skier.mapY -= FacadeMediator.skier.speed;
-            FacadeMediator.publish('placeNewObstacle', 6);
+        if(this.skier.direction === 1 || this.skier.direction === 5) {
+            this.skier.mapY -= this.skier.speed;
+            this.publish('placeNewObstacle', 6);
         }
     }
 
     down(){
-        FacadeMediator.skier.direction = 3;
+        this.skier.direction = 3;
     }
 
     pause_resume(){
         if(this.isPaused){
-            FacadeMediator.skier.direction = 3;
+            this.skier.direction = 3;
             $('section#game-board .status span').html(gameStatus.playing);
         }
         else {
-            FacadeMediator.skier.direction = 1;
+            this.skier.direction = 1;
             $('section#game-board .status span').html(gameStatus.paused);
         }
         pause = !pause;
@@ -131,5 +132,3 @@ class Controls {
         });
     }
 }
-
-export default Controls;

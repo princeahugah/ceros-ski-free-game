@@ -1,6 +1,6 @@
 import Mediator from './mediator';
 import config from './config';
-import canvas from './canvas';
+import Canvas from './canvas';
 import Assets from './assets';
 import Skier from './skier';
 import Controls from './controls';
@@ -14,22 +14,24 @@ export default (function(window, mediator) {
     FacadeMediator.publish = mediator.publish;
     FacadeMediator.installTo = mediator.installTo;
 
-    FacadeMediator.canvas = canvas;
+    FacadeMediator.canvas = new Canvas();
 
     FacadeMediator.installTo(Assets.prototype);
     FacadeMediator.assets = new Assets();
 
     FacadeMediator.installTo(Skier.prototype);
-    FacadeMediator.skier = new Skier();
-
-    FacadeMediator.installTo(Controls.prototype);
-    FacadeMediator.controls = new Controls();
-
-    FacadeMediator.installTo(Obstacles.prototype);
-    FacadeMediator.obstacles = new Obstacles();
+    FacadeMediator.skier = new Skier(FacadeMediator.assets, FacadeMediator.canvas.context);
 
     FacadeMediator.installTo(User.prototype);
     FacadeMediator.user = new User();
+
+    FacadeMediator.installTo(Controls.prototype);
+    FacadeMediator.controls = new Controls(FacadeMediator.user, FacadeMediator.skier);
+
+    FacadeMediator.installTo(Obstacles.prototype);
+    FacadeMediator.obstacles = new Obstacles(FacadeMediator.skier, FacadeMediator.assets, FacadeMediator.canvas.context);
+
+
 
     FacadeMediator.gameLoop = function(){
         if(FacadeMediator.skier.totalCollisions === config.collisionAttempts){

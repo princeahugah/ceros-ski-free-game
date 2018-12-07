@@ -11,7 +11,7 @@ describe('Assets Test', () => {
     });
 
     it('Assets should be a function', () => {
-        assert.typeOf(Assets, 'function', "Asset is not a function");
+        assert.typeOf(Assets, 'function', "Assets is not a function");
     });
 
     it('Constructor should subscribe to loadAssets once', () => {

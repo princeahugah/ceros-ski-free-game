@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -114,6 +114,108 @@ exports.default = Config;
 
 /***/ }),
 /* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+module.exports = function (module) {
+	if (!module.webpackPolyfill) {
+		module.deprecate = function () {};
+		module.paths = [];
+		// module.parent = undefined by default
+		if (!module.children) module.children = [];
+		Object.defineProperty(module, "loaded", {
+			enumerable: true,
+			get: function get() {
+				return module.l;
+			}
+		});
+		Object.defineProperty(module, "id", {
+			enumerable: true,
+			get: function get() {
+				return module.i;
+			}
+		});
+		module.webpackPolyfill = 1;
+	}
+	return module;
+};
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
+module.exports = __webpack_amd_options__;
+
+/* WEBPACK VAR INJECTION */}.call(this, {}))
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _workflow = __webpack_require__(4);
+
+var _workflow2 = _interopRequireDefault(_workflow);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+new _workflow2.default().start();
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _facademediator = __webpack_require__(5);
+
+var _facademediator2 = _interopRequireDefault(_facademediator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var WorkFlowManager = function () {
+    function WorkFlowManager() {
+        _classCallCheck(this, WorkFlowManager);
+
+        _facademediator2.default.subscribe('onStart', function () {
+            var name = null;
+            while (name === null || name === '') {
+                name = prompt("Please enter your name", "");
+            }
+            _facademediator2.default.publish('addUser', name);
+            _facademediator2.default.publish('initializeControls');
+            _facademediator2.default.publish('loadAssets', _facademediator2.default.gameLoop);
+        });
+    }
+
+    _createClass(WorkFlowManager, [{
+        key: 'start',
+        value: function start() {
+            _facademediator2.default.publish('onStart');
+        }
+    }]);
+
+    return WorkFlowManager;
+}();
+
+exports.default = WorkFlowManager;
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -157,11 +259,6 @@ var _user2 = _interopRequireDefault(_user);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-//const Mediator = require('./mediator');
-// const Assets = require('./assets');
-// console.log('mediator',Mediator);
-// console.log('assets',Assets);
-//console.log(new Assets());
 exports.default = function (window, mediator) {
     var FacadeMediator = window.FacadeMediator || {};
 
@@ -169,23 +266,22 @@ exports.default = function (window, mediator) {
     FacadeMediator.publish = mediator.publish;
     FacadeMediator.installTo = mediator.installTo;
 
-    FacadeMediator.canvas = _canvas2.default;
-    // console.log(typeof(Assets));
-    //  console.log(Assets);
+    FacadeMediator.canvas = new _canvas2.default();
+
     FacadeMediator.installTo(_assets2.default.prototype);
     FacadeMediator.assets = new _assets2.default();
 
     FacadeMediator.installTo(_skier2.default.prototype);
-    FacadeMediator.skier = new _skier2.default();
-
-    FacadeMediator.installTo(_controls2.default.prototype);
-    FacadeMediator.controls = new _controls2.default();
-
-    FacadeMediator.installTo(_obstacles2.default.prototype);
-    FacadeMediator.obstacles = new _obstacles2.default();
+    FacadeMediator.skier = new _skier2.default(FacadeMediator.assets, FacadeMediator.canvas.context);
 
     FacadeMediator.installTo(_user2.default.prototype);
     FacadeMediator.user = new _user2.default();
+
+    FacadeMediator.installTo(_controls2.default.prototype);
+    FacadeMediator.controls = new _controls2.default(FacadeMediator.user, FacadeMediator.skier);
+
+    FacadeMediator.installTo(_obstacles2.default.prototype);
+    FacadeMediator.obstacles = new _obstacles2.default(FacadeMediator.skier, FacadeMediator.assets, FacadeMediator.canvas.context);
 
     FacadeMediator.gameLoop = function () {
         if (FacadeMediator.skier.totalCollisions === _config2.default.collisionAttempts) {
@@ -214,108 +310,6 @@ exports.default = function (window, mediator) {
 
     return FacadeMediator;
 }(window, _mediator2.default);
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-module.exports = function (module) {
-	if (!module.webpackPolyfill) {
-		module.deprecate = function () {};
-		module.paths = [];
-		// module.parent = undefined by default
-		if (!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function get() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function get() {
-				return module.i;
-			}
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports) {
-
-/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {/* globals __webpack_amd_options__ */
-module.exports = __webpack_amd_options__;
-
-/* WEBPACK VAR INJECTION */}.call(this, {}))
-
-/***/ }),
-/* 4 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _workflow = __webpack_require__(5);
-
-var _workflow2 = _interopRequireDefault(_workflow);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-new _workflow2.default().start();
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _facademediator = __webpack_require__(1);
-
-var _facademediator2 = _interopRequireDefault(_facademediator);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var WorkFlowManager = function () {
-    function WorkFlowManager() {
-        _classCallCheck(this, WorkFlowManager);
-
-        _facademediator2.default.subscribe('onStart', function () {
-            var name = null;
-            while (name === null || name === '') {
-                name = prompt("Please enter your name", "");
-            }
-            _facademediator2.default.publish('addUser', name);
-            _facademediator2.default.publish('initializeControls');
-            _facademediator2.default.publish('loadAssets', _facademediator2.default.gameLoop);
-        });
-    }
-
-    _createClass(WorkFlowManager, [{
-        key: 'start',
-        value: function start() {
-            _facademediator2.default.publish('onStart');
-        }
-    }]);
-
-    return WorkFlowManager;
-}();
-
-exports.default = WorkFlowManager;
 
 /***/ }),
 /* 6 */
@@ -10307,7 +10301,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 	return jQuery;
 });
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(2)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(1)(module)))
 
 /***/ }),
 /* 8 */
@@ -19724,7 +19718,7 @@ LazyWrapper.prototype.clone=lazyClone;LazyWrapper.prototype.reverse=lazyReverse;
 lodash.prototype.at=wrapperAt;lodash.prototype.chain=wrapperChain;lodash.prototype.commit=wrapperCommit;lodash.prototype.next=wrapperNext;lodash.prototype.plant=wrapperPlant;lodash.prototype.reverse=wrapperReverse;lodash.prototype.toJSON=lodash.prototype.valueOf=lodash.prototype.value=wrapperValue;// Add lazy aliases.
 lodash.prototype.first=lodash.prototype.head;if(symIterator){lodash.prototype[symIterator]=wrapperToIterator;}return lodash;};/*--------------------------------------------------------------------------*/// Export lodash.
 var _=runInContext();// Some AMD build optimizers, like r.js, check for condition patterns like:
-if( true&&_typeof(__webpack_require__(3))=='object'&&__webpack_require__(3)){// Expose Lodash on the global object to prevent errors when Lodash is
+if( true&&_typeof(__webpack_require__(2))=='object'&&__webpack_require__(2)){// Expose Lodash on the global object to prevent errors when Lodash is
 // loaded by a script tag in the presence of an AMD loader.
 // See http://requirejs.org/docs/errors.html#mismatch for more details.
 // Use `_.noConflict` to remove Lodash from the global object.
@@ -19736,7 +19730,7 @@ else if(freeModule){// Export for Node.js.
 (freeModule.exports=_)._=_;// Export for CommonJS support.
 freeExports._=_;}else{// Export to the global object.
 root._=_;}}).call(undefined);
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9), __webpack_require__(2)(module)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9), __webpack_require__(1)(module)))
 
 /***/ }),
 /* 9 */
@@ -19789,7 +19783,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Canvas = function () {
+exports.default = function () {
     var $ = _config2.default.jQuery,
         gameWidth = _config2.default.gameWidth,
         gameHeight = _config2.default.gameHeight;
@@ -19826,8 +19820,6 @@ var Canvas = function () {
 
     return Canvas;
 }();
-
-exports.default = new Canvas();
 
 /***/ }),
 /* 11 */
@@ -19937,15 +19929,11 @@ var _config = __webpack_require__(0);
 
 var _config2 = _interopRequireDefault(_config);
 
-var _facademediator = __webpack_require__(1);
-
-var _facademediator2 = _interopRequireDefault(_facademediator);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Skier = function ($) {
+exports.default = function ($) {
     var gameStatus = _config2.default.gameStatus,
         maxLevels = _config2.default.maxLevels,
         gameWidth = _config2.default.gameWidth,
@@ -19962,9 +19950,11 @@ var Skier = function ($) {
     var gameLevel = void 0;
 
     var Skier = function () {
-        function Skier() {
+        function Skier(assets, context) {
             _classCallCheck(this, Skier);
 
+            this.ctx = context;
+            this.assets = assets;
             this.setVars();
             $('section#game-board .speed span').html(this.speed);
         }
@@ -19986,11 +19976,11 @@ var Skier = function ($) {
         }, {
             key: 'drawSkier',
             value: function drawSkier() {
-                var skierImage = _facademediator2.default.assets.loadedAssets[this.getSkierAsset(this.direction)];
+                var skierImage = this.assets.loadedAssets[this.getSkierAsset(this.direction)];
                 var x = (gameWidth - skierImage.width) / 2;
                 var y = (gameHeight - skierImage.height) / 2;
 
-                _facademediator2.default.canvas.context.drawImage(skierImage, x, y, skierImage.width, skierImage.height);
+                this.ctx.drawImage(skierImage, x, y, skierImage.width, skierImage.height);
             }
         }, {
             key: 'moveSkier',
@@ -20045,7 +20035,7 @@ var Skier = function ($) {
                 var _this = this;
 
                 var skierAssetName = this.getSkierAsset(this.direction);
-                var skierImage = _facademediator2.default.assets.loadedAssets[skierAssetName];
+                var skierImage = this.assets.loadedAssets[skierAssetName];
                 var skierRect = {
                     left: this.mapX + gameWidth / 2,
                     right: this.mapX + skierImage.width + gameWidth / 2,
@@ -20054,7 +20044,7 @@ var Skier = function ($) {
                 };
 
                 var collision = _.find(o.getObstacles, function (obstacle) {
-                    var obstacleImage = _facademediator2.default.assets.loadedAssets[obstacle.type];
+                    var obstacleImage = _this.assets.loadedAssets[obstacle.type];
                     var obstacleRect = {
                         left: obstacle.x,
                         right: obstacle.x + obstacleImage.width,
@@ -20127,8 +20117,6 @@ var Skier = function ($) {
     return Skier;
 }(_config2.default.jQuery);
 
-exports.default = Skier;
-
 /***/ }),
 /* 13 */
 /***/ (function(module, exports, __webpack_require__) {
@@ -20146,10 +20134,6 @@ var _config = __webpack_require__(0);
 
 var _config2 = _interopRequireDefault(_config);
 
-var _facademediator = __webpack_require__(1);
-
-var _facademediator2 = _interopRequireDefault(_facademediator);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20160,9 +20144,11 @@ var $ = _config2.default.jQuery,
 var pause = false;
 
 var Controls = function () {
-    function Controls() {
+    function Controls(user, skier) {
         _classCallCheck(this, Controls);
 
+        this.skier = skier;
+        this.user = user;
         this.subscribe('initializeControls', this.initialize);
         this.subscribe('localStorage', this.updateScores);
     }
@@ -20170,55 +20156,55 @@ var Controls = function () {
     _createClass(Controls, [{
         key: 'updateScores',
         value: function updateScores() {
-            window.localStorage.setItem(_facademediator2.default.user.name, JSON.stringify({
-                score: Math.ceil(_facademediator2.default.skier.mapY),
-                speed: Math.ceil(_facademediator2.default.skier.speed),
-                level: _facademediator2.default.skier.level
+            window.localStorage.setItem(this.user.name, JSON.stringify({
+                score: Math.ceil(this.skier.mapY),
+                speed: Math.ceil(this.skier.speed),
+                level: this.skier.level
             }));
         }
     }, {
         key: 'left',
         value: function left() {
-            if (_facademediator2.default.skier.direction === 1) {
-                _facademediator2.default.skier.mapX -= _facademediator2.default.skier.speed;
-                _facademediator2.default.publish('placeNewObstacle', _facademediator2.default.skier.direction);
-            } else if (_facademediator2.default.skier.direction > 1) {
-                _facademediator2.default.skier.direction -= 1;
+            if (this.skier.direction === 1) {
+                this.skier.mapX -= this.skier.speed;
+                this.publish('placeNewObstacle', this.skier.direction);
+            } else if (this.skier.direction > 1) {
+                this.skier.direction -= 1;
             } else {
-                _facademediator2.default.skier.direction = 0;
+                this.skier.direction = 0;
             }
         }
     }, {
         key: 'right',
         value: function right() {
-            if (_facademediator2.default.skier.direction === 5) {
-                _facademediator2.default.skier.mapX += _facademediator2.default.skier.speed;
-                _facademediator2.default.publish('placeNewObstacle', _facademediator2.default.skier.direction);
+            if (this.skier.direction === 5) {
+                this.skier.mapX += this.skier.speed;
+                this.publish('placeNewObstacle', this.skier.direction);
             } else {
-                _facademediator2.default.skier.direction += 1;
+                this.skier.direction += 1;
             }
         }
     }, {
         key: 'up',
         value: function up() {
-            if (_facademediator2.default.skier.direction === 1 || _facademediator2.default.skier.direction === 5) {
-                _facademediator2.default.skier.mapY -= _facademediator2.default.skier.speed;
-                _facademediator2.default.publish('placeNewObstacle', 6);
+            if (this.skier.direction === 1 || this.skier.direction === 5) {
+                this.skier.mapY -= this.skier.speed;
+                this.publish('placeNewObstacle', 6);
             }
         }
     }, {
         key: 'down',
         value: function down() {
-            _facademediator2.default.skier.direction = 3;
+            this.skier.direction = 3;
         }
     }, {
         key: 'pause_resume',
         value: function pause_resume() {
             if (this.isPaused) {
-                _facademediator2.default.skier.direction = 3;
+                this.skier.direction = 3;
                 $('section#game-board .status span').html(gameStatus.playing);
             } else {
-                _facademediator2.default.skier.direction = 1;
+                this.skier.direction = 1;
                 $('section#game-board .status span').html(gameStatus.paused);
             }
             pause = !pause;
@@ -20319,10 +20305,6 @@ var _config = __webpack_require__(0);
 
 var _config2 = _interopRequireDefault(_config);
 
-var _facademediator = __webpack_require__(1);
-
-var _facademediator2 = _interopRequireDefault(_facademediator);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -20335,9 +20317,12 @@ var Obstacles = function ($) {
     var obstacleTypes = ['tree', 'treeCluster', 'rock1', 'rock2'];
 
     var Obstacles = function () {
-        function Obstacles() {
+        function Obstacles(skier, assets, context) {
             _classCallCheck(this, Obstacles);
 
+            this.skier = skier;
+            this.assets = assets;
+            this.ctx = context;
             this.initialize();
             this.subscribe('placeInitialObstacles', this.placeInitialObstacles);
             this.subscribe('placeNewObstacle', this.placeNewObstacle);
@@ -20351,18 +20336,20 @@ var Obstacles = function ($) {
         }, {
             key: 'drawObstacles',
             value: function drawObstacles() {
+                var _this = this;
+
                 var newObstacles = [];
 
                 _.each(this.obstacles, function (obstacle) {
-                    var obstacleImage = _facademediator2.default.assets.loadedAssets[obstacle.type];
-                    var x = obstacle.x - _facademediator2.default.skier.mapX - obstacleImage.width / 2;
-                    var y = obstacle.y - _facademediator2.default.skier.mapY - obstacleImage.height / 2;
+                    var obstacleImage = _this.assets.loadedAssets[obstacle.type];
+                    var x = obstacle.x - _this.skier.mapX - obstacleImage.width / 2;
+                    var y = obstacle.y - _this.skier.mapY - obstacleImage.height / 2;
 
                     if (x < -100 || x > gameWidth + 50 || y < -100 || y > gameHeight + 50) {
                         return;
                     }
 
-                    _facademediator2.default.canvas.context.drawImage(obstacleImage, x, y, obstacleImage.width, obstacleImage.height);
+                    _this.ctx.drawImage(obstacleImage, x, y, obstacleImage.width, obstacleImage.height);
 
                     newObstacles.push(obstacle);
                 });
@@ -20382,24 +20369,35 @@ var Obstacles = function ($) {
                 for (var i = 0; i < numberObstacles; i++) {
                     this.placeRandomObstacle(minX, maxX, minY, maxY);
                 }
+                this.sortObstacles();
+            }
+        }, {
+            key: 'sortObstacles',
+            value: function sortObstacles() {
+                var _this2 = this;
 
                 this.obstacles = _.sortBy(this.obstacles, function (obstacle) {
-                    var obstacleImage = _facademediator2.default.assets.loadedAssets[obstacle.type];
+                    var obstacleImage = _this2.assets.loadedAssets[obstacle.type];
                     return obstacle.y + obstacleImage.height;
                 });
             }
         }, {
+            key: 'randomize',
+            value: function randomize() {
+                return _.random(1, 8);
+            }
+        }, {
             key: 'placeNewObstacle',
             value: function placeNewObstacle(dir) {
-                var shouldPlaceObstacle = _.random(1, 8);
+                var shouldPlaceObstacle = this.randomize();
                 if (shouldPlaceObstacle !== 8) {
                     return;
                 }
 
-                var leftEdge = _facademediator2.default.skier.mapX;
-                var rightEdge = _facademediator2.default.skier.mapX + gameWidth;
-                var topEdge = _facademediator2.default.skier.mapY;
-                var bottomEdge = _facademediator2.default.skier.mapY + gameHeight;
+                var leftEdge = this.skier.mapX;
+                var rightEdge = this.skier.mapX + gameWidth;
+                var topEdge = this.skier.mapY;
+                var bottomEdge = this.skier.mapY + gameHeight;
 
                 switch (dir) {
                     case 1:
@@ -20448,10 +20446,7 @@ var Obstacles = function ($) {
             value: function calculateOpenPosition(minX, maxX, minY, maxY) {
                 var x = _.random(minX, maxX);
                 var y = _.random(minY, maxY);
-
-                var foundCollision = _.find(this.obstacles, function (obstacle) {
-                    return x > obstacle.x - 50 && x < obstacle.x + 50 && y > obstacle.y - 50 && y < obstacle.y + 50;
-                });
+                var foundCollision = this.hasCollided(x, y);
 
                 if (foundCollision) {
                     return this.calculateOpenPosition(minX, maxX, minY, maxY);
@@ -20461,6 +20456,13 @@ var Obstacles = function ($) {
                         y: y
                     };
                 }
+            }
+        }, {
+            key: 'hasCollided',
+            value: function hasCollided(x, y) {
+                return _.find(this.obstacles, function (obstacle) {
+                    return x > obstacle.x - 50 && x < obstacle.x + 50 && y > obstacle.y - 50 && y < obstacle.y + 50;
+                });
             }
         }, {
             key: 'getObstacles',

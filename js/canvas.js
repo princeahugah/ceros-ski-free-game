@@ -1,6 +1,6 @@
 import config from './config';
 
-const Canvas = (function(){
+export default (function(){
     
     const { jQuery: $, gameWidth, gameHeight } = config;
 
@@ -30,5 +30,3 @@ const Canvas = (function(){
 
     return Canvas;
 })();
-
-export default new Canvas();

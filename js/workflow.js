@@ -1,6 +1,6 @@
 import FacadeMediator from './facademediator';
 
-class WorkFlowManager {
+export default class WorkFlowManager {
     constructor(){
         FacadeMediator.subscribe('onStart', () => {
             let name = null;
@@ -17,5 +17,3 @@ class WorkFlowManager {
         FacadeMediator.publish('onStart');
     }
 }
-
-export default WorkFlowManager;

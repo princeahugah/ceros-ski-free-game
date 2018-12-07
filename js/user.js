@@ -1,4 +1,4 @@
-class User {
+export default class User {
     constructor(){
         this.subscribe('addUser', this.addUser);
     }
@@ -9,5 +9,3 @@ class User {
         $('section#game-board .user span').html(n);
     }
 }
-
-export default User;
