@@ -29,6 +29,7 @@ The left bug has been fixed and the game no longer crasheds. The skier gets up a
     - The game rules button basically informs you on how to use the game.
     - The reset button restarts the game so another user can also play.
     
+-  Play the game on this link: http://skigame.aceappsltd.com
 
 
 # Ceros Ski Code Challenge
