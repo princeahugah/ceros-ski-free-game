@@ -1,7 +1,7 @@
 import config from './config';
 
 export default (function($){
-    const { gameStatus, maxLevels, gameWidth, gameHeight } = config;
+    const { gameStatus, jumpingInterval, maxLevels, gameWidth, gameHeight } = config;
     let { levelCoverage } = config;
     const skierAsset = [
         'skierCrash',
@@ -9,7 +9,12 @@ export default (function($){
         'skierLeftDown',
         'skierDown',
         'skierRightDown',
-        'skierRight'
+        'skierRight',
+        'skierJump1',
+        'skierJump2',
+        'skierJump3',
+        'skierJump4',
+        'skierJump5'
     ];
 
     let skierDirection;
@@ -18,6 +23,8 @@ export default (function($){
     let skierSpeed;
     let totalCollisions = 0;
     let gameLevel;
+    let jIntv = jumpingInterval;
+    let eatSkier = false;
 
     class Skier {
     
@@ -34,6 +41,8 @@ export default (function($){
             this.mapY = 0;
             this.speed = 8;
             this.level = 1;
+            this.jumping = false;
+            this.directionBeforeJump = 0;
         }
 
         get direction(){
@@ -80,11 +89,19 @@ export default (function($){
             return skierAsset[ dir ];
         }
 
+        set isSkierBeingEaten(eat){
+            eatSkier = eat;
+        }
+
+        get isSkierBeingEaten(){
+            return eatSkier;
+        }
+
         drawSkier(){
             const skierImage = this.assets.loadedAssets[ this.getSkierAsset( this.direction ) ];
             const x = (gameWidth - skierImage.width) / 2;
             const y = (gameHeight - skierImage.height) / 2;
-    
+            
             this.ctx.drawImage(skierImage, x, y, skierImage.width, skierImage.height);
         }
 
@@ -92,24 +109,39 @@ export default (function($){
             let oldMapY = this.mapY;
             switch(this.direction) {
                 case 2:
+                    this.jumping = false;
                     this.mapX -= Math.round(this.speed / 1.4142);
                     this.mapY += Math.round(this.speed / 1.4142);
     
                     o.placeNewObstacle(this.direction);
                     break;
                 case 3:
+                    this.jumping = false;
                     this.mapY += this.speed;
     
                     o.placeNewObstacle(this.direction);
                     break;
                 case 4:
+                    this.jumping = false;
                     this.mapX += this.speed / 1.4142;
                     this.mapY += this.speed / 1.4142;
     
                     o.placeNewObstacle(this.direction);
                     break;
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                    this.jump();
+                    o.placeNewObstacle(this.direction);
+                    break;
             }
-            if(this.mapY > oldMapY){
+            this.checkLevelUpdate(oldMapY);
+        }
+
+        checkLevelUpdate(oldMapY){
+            if(this.mapY > oldMapY){ //if there's a change in distance
                 $('section#game-board .status span').html(gameStatus.playing);
                 $('section#game-board .score span').html(Math.ceil(this.mapY));
                 
@@ -124,7 +156,10 @@ export default (function($){
                     this.level = newLevel;
                     $('section#game-board .level span').html(newLevel);
                     levelCoverage += levelCoverage / 2;
-                    this.speed += this.speed / 2;
+                    this.speed += this.speed / 4;
+                    if(this.level === (Math.floor(maxLevels/2) + 1)){ //rhino appears after you have played half the game level
+                        this.publish('showRhino', true);
+                    }
                 }
                 $('section#game-board .speed span').html(this.speed);
             }
@@ -159,7 +194,7 @@ export default (function($){
                 return this.intersectRect(skierRect, obstacleRect);
             });
     
-            if(collision) {
+            if(collision && !this.jumping) { //ignore collision while jumping
                 if(this.direction > 0){
                     totalCollisions++;
                     $('section#game-board .collisions span').html(this.totalCollisions);
@@ -171,6 +206,36 @@ export default (function($){
 
         get totalCollisions(){
             return totalCollisions;
+        }
+
+        set totalCollisions(col){
+            totalCollisions = col;
+        }
+
+        jump(){
+            if(!this.jumping) { //started jumping
+                this.directionBeforeJump = this.direction;
+                this.direction = 6;
+                this.jumping = true;
+                jIntv = jumpingInterval;
+            }
+            else if(this.jumping && --jIntv === 0){
+                this.direction++;
+                jIntv = jumpingInterval;
+            }
+            
+            if(this.direction > 10){ //done jumping
+                this.direction = this.directionBeforeJump;
+                this.jumping = false;
+            }
+            //jump in the direction of skier movement 
+            if(this.directionBeforeJump === 2){
+                this.mapX -=  Math.round(this.speed / 2);
+            }
+            else if(this.directionBeforeJump === 4){
+                this.mapX += this.speed / 2;
+            }
+            this.mapY += this.speed / 2;
         }
     }
     return Skier;

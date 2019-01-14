@@ -10,8 +10,15 @@ const Config = {
         crashed: 'Crashed'
     },
     collisionAttempts: 5,
-    levelCoverage: 10000,
-    maxLevels: 10
+    levelCoverage: 2000,
+    maxLevels: 5,
+    jumpingInterval: 12,
+    rhino: {
+        defaultSpeed: 6,
+        speedFactor: 0.02,
+        chaseInterval: 10,
+        eatingInterval: 20
+    }
 };
 
 export default Config;

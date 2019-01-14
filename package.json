@@ -9,7 +9,7 @@
         "build:prod": "webpack -p",
         "test": "mocha -R spec --require babel-register -r jsdom-global/register ./tests/*.test.js"
     },
-    "author": "dan.wash@ceros.com",
+    "author": "prince.ahugah@andela.com",
     "license": "",
     "engines": {
         "node": "11.1.0"

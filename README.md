@@ -3,7 +3,7 @@ The left bug has been fixed and the game no longer crasheds. The skier gets up a
 
 # New Features
 - Your Name
-  When the game first loads, you will be requested to enter your name. Please do so, you don't want to miss the league table.
+    - When the game first loads, you will be requested to enter your name. Please do so, you don't want to miss the league table.
   
 -  Game Status: 
     - Start: This status shows up when the game first loads. It indicates your readiness to start the game.

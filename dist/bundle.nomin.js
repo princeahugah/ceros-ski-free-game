@@ -106,8 +106,15 @@ var Config = {
         crashed: 'Crashed'
     },
     collisionAttempts: 5,
-    levelCoverage: 10000,
-    maxLevels: 10
+    levelCoverage: 2000,
+    maxLevels: 5,
+    jumpingInterval: 12,
+    rhino: {
+        defaultSpeed: 6,
+        speedFactor: 0.02,
+        chaseInterval: 10,
+        eatingInterval: 20
+    }
 };
 
 exports.default = Config;
@@ -245,26 +252,30 @@ var _skier = __webpack_require__(12);
 
 var _skier2 = _interopRequireDefault(_skier);
 
-var _controls = __webpack_require__(13);
+var _rhino = __webpack_require__(13);
+
+var _rhino2 = _interopRequireDefault(_rhino);
+
+var _controls = __webpack_require__(14);
 
 var _controls2 = _interopRequireDefault(_controls);
 
-var _obstacles = __webpack_require__(14);
+var _obstacles = __webpack_require__(15);
 
 var _obstacles2 = _interopRequireDefault(_obstacles);
 
-var _user = __webpack_require__(15);
+var _user = __webpack_require__(16);
 
 var _user2 = _interopRequireDefault(_user);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (window, mediator) {
+exports.default = function (window) {
     var FacadeMediator = window.FacadeMediator || {};
 
-    FacadeMediator.subscribe = mediator.subscribe;
-    FacadeMediator.publish = mediator.publish;
-    FacadeMediator.installTo = mediator.installTo;
+    FacadeMediator.subscribe = _mediator2.default.subscribe;
+    FacadeMediator.publish = _mediator2.default.publish;
+    FacadeMediator.installTo = _mediator2.default.installTo;
 
     FacadeMediator.canvas = new _canvas2.default();
 
@@ -274,11 +285,14 @@ exports.default = function (window, mediator) {
     FacadeMediator.installTo(_skier2.default.prototype);
     FacadeMediator.skier = new _skier2.default(FacadeMediator.assets, FacadeMediator.canvas.context);
 
+    FacadeMediator.installTo(_rhino2.default.prototype);
+    FacadeMediator.rhino = new _rhino2.default(FacadeMediator.assets, FacadeMediator.skier, FacadeMediator.canvas.context);
+
     FacadeMediator.installTo(_user2.default.prototype);
     FacadeMediator.user = new _user2.default();
 
     FacadeMediator.installTo(_controls2.default.prototype);
-    FacadeMediator.controls = new _controls2.default(FacadeMediator.user, FacadeMediator.skier);
+    FacadeMediator.controls = new _controls2.default(FacadeMediator.user, FacadeMediator.skier, FacadeMediator.rhino);
 
     FacadeMediator.installTo(_obstacles2.default.prototype);
     FacadeMediator.obstacles = new _obstacles2.default(FacadeMediator.skier, FacadeMediator.assets, FacadeMediator.canvas.context);
@@ -289,17 +303,28 @@ exports.default = function (window, mediator) {
             FacadeMediator.publish('localStorage');
             return;
         }
+
+        if (FacadeMediator.rhino && FacadeMediator.rhino.finishedEatingSkier) {
+            alert('Awww! You have been eaten by a rhino'); //update scores in localstorage
+            FacadeMediator.publish('localStorage');
+            return;
+        }
+
         FacadeMediator.canvas.context.save();
         // Retina support
         FacadeMediator.canvas.context.scale(window.devicePixelRatio, window.devicePixelRatio);
 
         FacadeMediator.canvas.clearCanvas();
 
-        FacadeMediator.skier.moveSkier(FacadeMediator.obstacles);
+        if (!FacadeMediator.skier.isSkierBeingEaten) {
+            FacadeMediator.skier.moveSkier(FacadeMediator.obstacles);
+            FacadeMediator.skier.checkIfSkierHitObstacle(FacadeMediator.obstacles);
+            FacadeMediator.skier.drawSkier();
+        }
 
-        FacadeMediator.skier.checkIfSkierHitObstacle(FacadeMediator.obstacles);
-
-        FacadeMediator.skier.drawSkier();
+        if (FacadeMediator.rhino.isRhinoVisible()) {
+            FacadeMediator.rhino.drawRhino();
+        }
 
         FacadeMediator.obstacles.drawObstacles();
 
@@ -309,7 +334,7 @@ exports.default = function (window, mediator) {
     };
 
     return FacadeMediator;
-}(window, _mediator2.default);
+}(window);
 
 /***/ }),
 /* 6 */
@@ -19850,6 +19875,20 @@ exports.default = function ($) {
         'skierDown': 'img/skier_down.png',
         'skierRightDown': 'img/skier_right_down.png',
         'skierRight': 'img/skier_right.png',
+        'skierJump1': 'img/skier_jump_1.png',
+        'skierJump2': 'img/skier_jump_2.png',
+        'skierJump3': 'img/skier_jump_3.png',
+        'skierJump4': 'img/skier_jump_4.png',
+        'skierJump5': 'img/skier_jump_5.png',
+        'rhinoDefault': 'img/rhino_default.png',
+        'rhinoRunLeft': 'img/rhino_run_left.png',
+        'rhinoRunLeft2': 'img/rhino_run_left_2.png',
+        'rhinoLift': 'img/rhino_lift.png',
+        'rhinoLiftMouthOpen': 'img/rhino_lift_mouth_open.png',
+        'rhinoLiftEat1': 'img/rhino_lift_eat_1.png',
+        'rhinoLiftEat2': 'img/rhino_lift_eat_2.png',
+        'rhinoLiftEat3': 'img/rhino_lift_eat_3.png',
+        'rhinoLiftEat4': 'img/rhino_lift_eat_4.png',
         'tree': 'img/tree_1.png',
         'treeCluster': 'img/tree_cluster.png',
         'rock1': 'img/rock_1.png',
@@ -19935,12 +19974,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 exports.default = function ($) {
     var gameStatus = _config2.default.gameStatus,
+        jumpingInterval = _config2.default.jumpingInterval,
         maxLevels = _config2.default.maxLevels,
         gameWidth = _config2.default.gameWidth,
         gameHeight = _config2.default.gameHeight;
     var levelCoverage = _config2.default.levelCoverage;
 
-    var skierAsset = ['skierCrash', 'skierLeft', 'skierLeftDown', 'skierDown', 'skierRightDown', 'skierRight'];
+    var skierAsset = ['skierCrash', 'skierLeft', 'skierLeftDown', 'skierDown', 'skierRightDown', 'skierRight', 'skierJump1', 'skierJump2', 'skierJump3', 'skierJump4', 'skierJump5'];
 
     var skierDirection = void 0;
     var skierMapX = void 0;
@@ -19948,6 +19988,8 @@ exports.default = function ($) {
     var skierSpeed = void 0;
     var totalCollisions = 0;
     var gameLevel = void 0;
+    var jIntv = jumpingInterval;
+    var eatSkier = false;
 
     var Skier = function () {
         function Skier(assets, context) {
@@ -19967,6 +20009,8 @@ exports.default = function ($) {
                 this.mapY = 0;
                 this.speed = 8;
                 this.level = 1;
+                this.jumping = false;
+                this.directionBeforeJump = 0;
             }
         }, {
             key: 'getSkierAsset',
@@ -19988,24 +20032,41 @@ exports.default = function ($) {
                 var oldMapY = this.mapY;
                 switch (this.direction) {
                     case 2:
+                        this.jumping = false;
                         this.mapX -= Math.round(this.speed / 1.4142);
                         this.mapY += Math.round(this.speed / 1.4142);
 
                         o.placeNewObstacle(this.direction);
                         break;
                     case 3:
+                        this.jumping = false;
                         this.mapY += this.speed;
 
                         o.placeNewObstacle(this.direction);
                         break;
                     case 4:
+                        this.jumping = false;
                         this.mapX += this.speed / 1.4142;
                         this.mapY += this.speed / 1.4142;
 
                         o.placeNewObstacle(this.direction);
                         break;
+                    case 6:
+                    case 7:
+                    case 8:
+                    case 9:
+                    case 10:
+                        this.jump();
+                        o.placeNewObstacle(this.direction);
+                        break;
                 }
+                this.checkLevelUpdate(oldMapY);
+            }
+        }, {
+            key: 'checkLevelUpdate',
+            value: function checkLevelUpdate(oldMapY) {
                 if (this.mapY > oldMapY) {
+                    //if there's a change in distance
                     $('section#game-board .status span').html(gameStatus.playing);
                     $('section#game-board .score span').html(Math.ceil(this.mapY));
 
@@ -20019,7 +20080,11 @@ exports.default = function ($) {
                         this.level = newLevel;
                         $('section#game-board .level span').html(newLevel);
                         levelCoverage += levelCoverage / 2;
-                        this.speed += this.speed / 2;
+                        this.speed += this.speed / 4;
+                        if (this.level === Math.floor(maxLevels / 2) + 1) {
+                            //rhino appears after you have played half the game level
+                            this.publish('showRhino', true);
+                        }
                     }
                     $('section#game-board .speed span').html(this.speed);
                 }
@@ -20055,7 +20120,8 @@ exports.default = function ($) {
                     return _this.intersectRect(skierRect, obstacleRect);
                 });
 
-                if (collision) {
+                if (collision && !this.jumping) {
+                    //ignore collision while jumping
                     if (this.direction > 0) {
                         totalCollisions++;
                         $('section#game-board .collisions span').html(this.totalCollisions);
@@ -20063,6 +20129,33 @@ exports.default = function ($) {
                     }
                     this.direction = 0;
                 }
+            }
+        }, {
+            key: 'jump',
+            value: function jump() {
+                if (!this.jumping) {
+                    //started jumping
+                    this.directionBeforeJump = this.direction;
+                    this.direction = 6;
+                    this.jumping = true;
+                    jIntv = jumpingInterval;
+                } else if (this.jumping && --jIntv === 0) {
+                    this.direction++;
+                    jIntv = jumpingInterval;
+                }
+
+                if (this.direction > 10) {
+                    //done jumping
+                    this.direction = this.directionBeforeJump;
+                    this.jumping = false;
+                }
+                //jump in the direction of skier movement 
+                if (this.directionBeforeJump === 2) {
+                    this.mapX -= Math.round(this.speed / 2);
+                } else if (this.directionBeforeJump === 4) {
+                    this.mapX += this.speed / 2;
+                }
+                this.mapY += this.speed / 2;
             }
         }, {
             key: 'direction',
@@ -20105,9 +20198,20 @@ exports.default = function ($) {
                 skierSpeed = ss;
             }
         }, {
+            key: 'isSkierBeingEaten',
+            set: function set(eat) {
+                eatSkier = eat;
+            },
+            get: function get() {
+                return eatSkier;
+            }
+        }, {
             key: 'totalCollisions',
             get: function get() {
                 return totalCollisions;
+            },
+            set: function set(col) {
+                totalCollisions = col;
             }
         }]);
 
@@ -20138,158 +20242,324 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var $ = _config2.default.jQuery,
-    gameStatus = _config2.default.gameStatus;
+exports.default = function ($) {
+    var rhino = _config2.default.rhino,
+        gameWidth = _config2.default.gameWidth,
+        gameHeight = _config2.default.gameHeight;
 
-var pause = false;
+    var rhinoAsset = ['rhinoDefault', 'rhinoRunLeft', 'rhinoRunLeft2', 'rhinoLift', 'rhinoLiftMouthOpen', 'rhinoLiftEat1', 'rhinoLiftEat2', 'rhinoLiftEat3', 'rhinoLiftEat4'];
 
-var Controls = function () {
-    function Controls(user, skier) {
-        _classCallCheck(this, Controls);
+    var rhinoDirection = 1;
+    var chaseInterval = 0;
+    var speedInterval = 0;
+    var eatingInterval = 0;
+    var speed = rhino.defaultSpeed;
+    var eatingSkier = false;
+    var showRhino = false;
+    var eaten = false;
 
-        this.skier = skier;
-        this.user = user;
-        this.subscribe('initializeControls', this.initialize);
-        this.subscribe('localStorage', this.updateScores);
-    }
+    var Rhino = function () {
+        function Rhino(assets, skier, context) {
+            _classCallCheck(this, Rhino);
 
-    _createClass(Controls, [{
-        key: 'updateScores',
-        value: function updateScores() {
-            window.localStorage.setItem(this.user.name, JSON.stringify({
-                score: Math.ceil(this.skier.mapY),
-                speed: Math.ceil(this.skier.speed),
-                level: this.skier.level
-            }));
+            this.ctx = context;
+            this.assets = assets;
+            this.skier = skier;
+            this.subscribe('showRhino', this.setRhinoVisibility, this);
         }
-    }, {
-        key: 'left',
-        value: function left() {
-            if (this.skier.direction === 1) {
-                this.skier.mapX -= this.skier.speed;
-                this.publish('placeNewObstacle', this.skier.direction);
-            } else if (this.skier.direction > 1) {
-                this.skier.direction -= 1;
-            } else {
-                this.skier.direction = 0;
+
+        _createClass(Rhino, [{
+            key: 'getRhinoAsset',
+            value: function getRhinoAsset(dir) {
+                return rhinoAsset[dir];
             }
-        }
-    }, {
-        key: 'right',
-        value: function right() {
-            if (this.skier.direction === 5) {
-                this.skier.mapX += this.skier.speed;
-                this.publish('placeNewObstacle', this.skier.direction);
-            } else {
-                this.skier.direction += 1;
+        }, {
+            key: 'isRhinoVisible',
+            value: function isRhinoVisible() {
+                return showRhino;
             }
-        }
-    }, {
-        key: 'up',
-        value: function up() {
-            if (this.skier.direction === 1 || this.skier.direction === 5) {
-                this.skier.mapY -= this.skier.speed;
-                this.publish('placeNewObstacle', 6);
+        }, {
+            key: 'setRhinoVisibility',
+            value: function setRhinoVisibility(sr) {
+                showRhino = sr;
             }
+        }, {
+            key: 'eatSkier',
+            value: function eatSkier() {
+                if (!eatingSkier) {
+                    this.direction = 3;
+                    this.skier.direction = 5;
+                    this.skier.isSkierBeingEaten = true;
+                    eatingSkier = true;
+                }
+                if (eatingInterval < rhino.eatingInterval) {
+                    eatingInterval++;
+                } else if (eatingInterval === rhino.eatingInterval && this.direction < 8) {
+                    this.direction++;
+                    eatingInterval = 0;
+                } else {
+                    //rhino is done eating skier
+                    this.setRhinoVisibility(false);
+                    this.finishedEatingSkier = true;
+                }
+            }
+        }, {
+            key: 'drawRhino',
+            value: function drawRhino() {
+                this.changeRhinoDirection();
+                var rhinoImage = this.assets.loadedAssets[this.getRhinoAsset(this.direction)];
+                var x = (gameWidth - rhinoImage.width) / 2;
+                var y = (gameHeight - rhinoImage.height) / this.speedRate;
+
+                this.ctx.drawImage(rhinoImage, x, y, rhinoImage.width, rhinoImage.height);
+            }
+        }, {
+            key: 'changeRhinoDirection',
+            value: function changeRhinoDirection() {
+                if (!this.isRhinoVisible) {
+                    return;
+                }
+                if (chaseInterval < rhino.chaseInterval) {
+                    chaseInterval++;
+                } else if (chaseInterval === rhino.chaseInterval && this.direction === 1) {
+                    this.direction = 2;
+                    chaseInterval = 0;
+                } else if (chaseInterval === rhino.chaseInterval && this.direction === 2) {
+                    this.direction = 1;
+                    chaseInterval = 0;
+                }
+            }
+        }, {
+            key: 'direction',
+            get: function get() {
+                return rhinoDirection;
+            },
+            set: function set(sd) {
+                rhinoDirection = sd;
+            }
+        }, {
+            key: 'finishedEatingSkier',
+            get: function get() {
+                return eaten;
+            },
+            set: function set(fes) {
+                eaten = fes;
+            }
+        }, {
+            key: 'speedRate',
+            get: function get() {
+                if (speedInterval < rhino.chaseInterval) {
+                    speedInterval++;
+                } else if (speedInterval === rhino.chaseInterval && speed.toFixed(2) !== '2.00') {
+                    speed -= rhino.speedFactor;
+                    speedInterval = 0;
+                } else {
+                    //rhino collides with skier. Start Eating and make skier invisible
+                    this.eatSkier();
+                }
+                return speed;
+            }
+        }]);
+
+        return Rhino;
+    }();
+
+    return Rhino;
+}(_config2.default.jQuery);
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _config = __webpack_require__(0);
+
+var _config2 = _interopRequireDefault(_config);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+exports.default = function () {
+    var $ = _config2.default.jQuery,
+        gameStatus = _config2.default.gameStatus;
+
+    var pause = false;
+
+    var Controls = function () {
+        function Controls(user, skier, rhino) {
+            _classCallCheck(this, Controls);
+
+            this.skier = skier;
+            this.user = user;
+            this.rhino = rhino;
+            this.subscribe('initializeControls', this.initialize);
+            this.subscribe('localStorage', this.updateScores);
         }
-    }, {
-        key: 'down',
-        value: function down() {
-            this.skier.direction = 3;
-        }
-    }, {
-        key: 'pause_resume',
-        value: function pause_resume() {
-            if (this.isPaused) {
+
+        _createClass(Controls, [{
+            key: 'updateScores',
+            value: function updateScores() {
+                window.localStorage.setItem(this.user.name, JSON.stringify({
+                    score: Math.ceil(this.skier.mapY),
+                    speed: Math.ceil(this.skier.speed),
+                    level: this.skier.level
+                }));
+            }
+        }, {
+            key: 'left',
+            value: function left() {
+                if (this.skier.direction === 1) {
+                    this.skier.mapX -= this.skier.speed;
+                    this.publish('placeNewObstacle', this.skier.direction);
+                } else if (this.skier.direction > 1) {
+                    this.skier.direction -= 1;
+                } else {
+                    this.skier.direction = 0;
+                }
+
+                this.rhino.mapX -= this.rhino.speed;
+            }
+        }, {
+            key: 'right',
+            value: function right() {
+                if (this.skier.direction === 5) {
+                    this.skier.mapX += this.skier.speed;
+                    this.publish('placeNewObstacle', this.skier.direction);
+                } else {
+                    this.skier.direction += 1;
+                }
+
+                this.rhino.mapX += this.rhino.speed;
+            }
+        }, {
+            key: 'up',
+            value: function up() {
+                if (this.skier.direction === 1 || this.skier.direction === 5) {
+                    this.skier.mapY -= this.skier.speed;
+                    this.publish('placeNewObstacle', 6);
+                } else {
+                    this.skier.jump();
+                }
+
+                this.rhino.mapY += this.rhino.speed;
+            }
+        }, {
+            key: 'down',
+            value: function down() {
                 this.skier.direction = 3;
-                $('section#game-board .status span').html(gameStatus.playing);
-            } else {
-                this.skier.direction = 1;
-                $('section#game-board .status span').html(gameStatus.paused);
+                this.rhino.changeRhinoDirection();
             }
-            pause = !pause;
-        }
-    }, {
-        key: 'initialize',
-        value: function initialize() {
-            var _this = this;
-
-            $(window).on('keydown', function (event) {
-                switch (event.which) {
-                    case 37:
-                        // left
-                        _this.left();
-                        event.preventDefault();
-                        break;
-                    case 39:
-                        // right
-                        _this.right();
-                        event.preventDefault();
-                        break;
-                    case 38:
-                        // up
-                        _this.up();
-                        event.preventDefault();
-                        break;
-                    case 40:
-                        // down
-                        _this.down();
-                        event.preventDefault();
-                        break;
-                    case 32:
-                        // pause
-                        _this.pause_resume();
-                        event.preventDefault();
-                        break;
-                }
-            });
-
-            $(document).on('click', 'ul.notifications li.reset', function (e) {
-                e.preventDefault();
-                window.location.reload();
-            });
-
-            $(document).on('click', 'ul.notifications li.rules', function (e) {
-                e.preventDefault();
-                var display = $(this).find('.notification-menu').css('display');
-                if (display === 'none') {
-                    $(this).find('.notification-menu').css('display', 'block');
+        }, {
+            key: 'pause_resume',
+            value: function pause_resume() {
+                if (this.isPaused) {
+                    //resume
+                    this.skier.direction = 3;
+                    this.rhino.direction = 1;
+                    $('section#game-board .status span').html(gameStatus.playing);
                 } else {
-                    $(this).find('.notification-menu').css('display', 'none');
+                    //pause
+                    this.skier.direction = 1;
+                    this.rhino.direction = 0;
+                    $('section#game-board .status span').html(gameStatus.paused);
                 }
-            });
+                pause = !pause;
+            }
+        }, {
+            key: 'initialize',
+            value: function initialize() {
+                var _this = this;
 
-            $(document).on('click', 'ul.notifications li.board', function (e) {
-                e.preventDefault();
-                var display = $(this).find('.notification-menu').css('display');
-                if (display === 'none') {
-                    $(this).find('.notification-menu').css('display', 'block');
-                    var tr = '';
-                    for (var i = 0; i < localStorage.length; i++) {
-                        var key = localStorage.key(i);
-                        var val = JSON.parse(localStorage.getItem(key));
-                        tr += '<tr>\n                            <td>' + key + '</td><td>' + val.speed + '</td><td>' + val.level + '</td><td>' + val.score + '</td>\n                        </tr>';
+                $(window).on('keydown', function (event) {
+                    if (!_this.skier.isSkierBeingEaten) {
+                        switch (event.which) {
+                            case 37:
+                                // left
+                                _this.left();
+                                event.preventDefault();
+                                break;
+                            case 39:
+                                // right
+                                _this.right();
+                                event.preventDefault();
+                                break;
+                            case 38:
+                                // up
+                                _this.up();
+                                event.preventDefault();
+                                break;
+                            case 40:
+                                // down
+                                _this.down();
+                                event.preventDefault();
+                                break;
+                            case 32:
+                                // pause
+                                _this.pause_resume();
+                                event.preventDefault();
+                                break;
+                        }
+                    } else {
+                        console.log('i am being eaten');
                     }
-                    $(this).find('table tbody').html(tr);
-                } else {
-                    $(this).find('.notification-menu').css('display', 'none');
-                }
-            });
-        }
-    }, {
-        key: 'isPaused',
-        get: function get() {
-            return pause;
-        }
-    }]);
+                });
+
+                $(document).on('click', 'ul.notifications li.reset', function (e) {
+                    e.preventDefault();
+                    window.location.reload();
+                });
+
+                $(document).on('click', 'ul.notifications li.rules', function (e) {
+                    e.preventDefault();
+                    var display = $(this).find('.notification-menu').css('display');
+                    if (display === 'none') {
+                        $(this).find('.notification-menu').css('display', 'block');
+                    } else {
+                        $(this).find('.notification-menu').css('display', 'none');
+                    }
+                });
+
+                $(document).on('click', 'ul.notifications li.board', function (e) {
+                    e.preventDefault();
+                    var display = $(this).find('.notification-menu').css('display');
+                    if (display === 'none') {
+                        $(this).find('.notification-menu').css('display', 'block');
+                        var tr = '';
+                        for (var i = 0; i < localStorage.length; i++) {
+                            var key = localStorage.key(i);
+                            var val = JSON.parse(localStorage.getItem(key));
+                            tr += '<tr>\n                                <td>' + key + '</td><td>' + val.speed + '</td><td>' + val.level + '</td><td>' + val.score + '</td>\n                            </tr>';
+                        }
+                        $(this).find('table tbody').html(tr);
+                    } else {
+                        $(this).find('.notification-menu').css('display', 'none');
+                    }
+                });
+            }
+        }, {
+            key: 'isPaused',
+            get: function get() {
+                return pause;
+            }
+        }]);
+
+        return Controls;
+    }();
 
     return Controls;
 }();
 
-exports.default = Controls;
-
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20480,7 +20750,7 @@ var Obstacles = function ($) {
 exports.default = Obstacles;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20492,30 +20762,38 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _config = __webpack_require__(0);
+
+var _config2 = _interopRequireDefault(_config);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var User = function () {
-    function User() {
-        _classCallCheck(this, User);
+exports.default = function ($) {
+    var User = function () {
+        function User() {
+            _classCallCheck(this, User);
 
-        this.subscribe('addUser', this.addUser);
-    }
-
-    _createClass(User, [{
-        key: 'addUser',
-        value: function addUser(name) {
-            var n = name.replace(/\b\w/g, function (l) {
-                return l.toUpperCase();
-            });
-            this.name = n;
-            $('section#game-board .user span').html(n);
+            this.subscribe('addUser', this.addUser);
         }
-    }]);
+
+        _createClass(User, [{
+            key: 'addUser',
+            value: function addUser(name) {
+                var n = name.replace(/\b\w/g, function (l) {
+                    return l.toUpperCase();
+                });
+                this.name = n;
+                $('section#game-board .user span').html(n);
+            }
+        }]);
+
+        return User;
+    }();
 
     return User;
-}();
-
-exports.default = User;
+}(_config2.default.jQuery);
 
 /***/ })
 /******/ ]);

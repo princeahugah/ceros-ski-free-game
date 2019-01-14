@@ -2,7 +2,6 @@ import User from '../js/user';
 const sinon = require('sinon');
 const chai = require('chai');
 const assert = chai.assert;
-const should = chai.should();
 
 describe('User Test', () => {
     beforeEach(function() {

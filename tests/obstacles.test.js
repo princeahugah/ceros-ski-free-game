@@ -2,7 +2,6 @@ import Obstacles from '../js/obstacles';
 const sinon = require('sinon');
 const chai = require('chai');
 const assert = chai.assert;
-const should = chai.should();
 
 describe('Obstacles Test', () => {
     beforeEach(function() {

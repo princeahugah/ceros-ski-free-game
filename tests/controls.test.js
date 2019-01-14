@@ -2,7 +2,6 @@ import Controls from '../js/controls';
 const sinon = require('sinon');
 const chai = require('chai');
 const assert = chai.assert;
-const should = chai.should();
 
 describe('Controls Test', () => {
     beforeEach(function() {

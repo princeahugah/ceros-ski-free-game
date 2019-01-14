@@ -2,7 +2,6 @@ import Skier from '../js/skier';
 const sinon = require('sinon');
 const chai = require('chai');
 const assert = chai.assert;
-const should = chai.should();
 
 describe('Skier Test', () => {
     it('Skier should be a function', () => {
@@ -34,19 +33,24 @@ describe('Skier Test', () => {
         assert.typeOf(skier.speed, 'number', "speed is a getter and should be a number");
     });
 
-    it('Skier instance should have getSkierAsset', () => {
+    it('Skier instance should have getSkierAsset method', () => {
         const skier = new Skier();
         assert.typeOf(skier.getSkierAsset, 'function', "getSkierAsset should be a function");
     });
 
-    it('Skier instance should have drawSkier', () => {
+    it('Skier instance should have drawSkier method', () => {
         const skier = new Skier();
         assert.typeOf(skier.drawSkier, 'function', "drawSkier should be a function");
     });
 
-    it('Skier instance should have moveSkier', () => {
+    it('Skier instance should have moveSkier method', () => {
         const skier = new Skier();
         assert.typeOf(skier.moveSkier, 'function', "moveSkier should be a function");
+    });
+
+    it('Skier instance should have checkLevelUpdate method', () => {
+        const skier = new Skier();
+        assert.typeOf(skier.checkLevelUpdate, 'function', "checkLevelUpdate should be a function");
     });
 
     it('Skier instance should have intersectRect', () => {
@@ -54,7 +58,7 @@ describe('Skier Test', () => {
         assert.typeOf(skier.intersectRect, 'function', "intersectRect should be a function");
     });
 
-    it('Skier instance should have checkIfSkierHitObstacle', () => {
+    it('Skier instance should have checkIfSkierHitObstacle method', () => {
         const skier = new Skier();
         assert.typeOf(skier.checkIfSkierHitObstacle, 'function', "checkIfSkierHitObstacle should be a function");
     });
@@ -62,5 +66,10 @@ describe('Skier Test', () => {
     it('Skier instance should have getter totalCollisions', () => {
         const skier = new Skier();
         assert.typeOf(skier.totalCollisions, 'number', "totalCollisions is a getter and should be a number");
+    });
+
+    it('Skier instance should have jump', () => {
+        const skier = new Skier();
+        assert.typeOf(skier.jump, 'function', "jump should be a function");
     });
 });
