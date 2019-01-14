@@ -105,7 +105,7 @@ export default (function($){
         }
 
         changeRhinoDirection(){
-            if(!this.isRhinoVisible){
+            if(!this.isRhinoVisible()){
                 return;
             }
             if(chaseInterval < rhino.chaseInterval){
