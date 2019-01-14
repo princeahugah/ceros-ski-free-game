@@ -20533,6 +20533,7 @@ exports.default = function () {
 
                 $(document).on('click', 'ul.notifications li.rules', function (e) {
                     e.preventDefault();
+                    $(this).siblings().find('.notification-menu').css('display', 'none');
                     var display = $(this).find('.notification-menu').css('display');
                     if (display === 'none') {
                         $(this).find('.notification-menu').css('display', 'block');
@@ -20543,6 +20544,7 @@ exports.default = function () {
 
                 $(document).on('click', 'ul.notifications li.board', function (e) {
                     e.preventDefault();
+                    $(this).siblings().find('.notification-menu').css('display', 'none');
                     var display = $(this).find('.notification-menu').css('display');
                     if (display === 'none') {
                         $(this).find('.notification-menu').css('display', 'block');
