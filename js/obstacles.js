@@ -1,6 +1,6 @@
 import config from './config';
 
-const Obstacles = (function($){
+export default (function($){
 
     const { _, gameWidth, gameHeight } = config;
     const obstacleTypes = [
@@ -144,5 +144,3 @@ const Obstacles = (function($){
 
     return Obstacles;
 })(config.jQuery);
-
-export default Obstacles;

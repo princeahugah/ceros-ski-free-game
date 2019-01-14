@@ -2,6 +2,7 @@ import Assets from '../js/assets';
 const sinon = require('sinon');
 const chai = require('chai');
 const assert = chai.assert;
+chai.should();
 
 describe('Assets Test', () => {
     beforeEach(function() {

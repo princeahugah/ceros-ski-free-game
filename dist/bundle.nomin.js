@@ -194,32 +194,47 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var WorkFlowManager = function () {
-    function WorkFlowManager() {
-        _classCallCheck(this, WorkFlowManager);
+exports.default = function (window) {
+    var WorkFlowManager = function () {
+        function WorkFlowManager() {
+            _classCallCheck(this, WorkFlowManager);
 
-        _facademediator2.default.subscribe('onStart', function () {
-            var name = null;
-            while (name === null || name === '') {
-                name = prompt("Please enter your name", "");
-            }
-            _facademediator2.default.publish('addUser', name);
-            _facademediator2.default.publish('initializeControls');
-            _facademediator2.default.publish('loadAssets', _facademediator2.default.gameLoop);
-        });
-    }
-
-    _createClass(WorkFlowManager, [{
-        key: 'start',
-        value: function start() {
-            _facademediator2.default.publish('onStart');
+            WorkFlowManager.facadeMediator().subscribe('onStart', this.initialize, this);
         }
-    }]);
+
+        _createClass(WorkFlowManager, [{
+            key: 'initialize',
+            value: function initialize() {
+                var name = null;
+                while (name === null || name === '') {
+                    name = this._window.prompt("Please enter your name", "");
+                }
+                WorkFlowManager.facadeMediator().publish('addUser', name);
+                WorkFlowManager.facadeMediator().publish('initializeControls');
+                WorkFlowManager.facadeMediator().publish('loadAssets', WorkFlowManager.facadeMediator().gameLoop);
+            }
+        }, {
+            key: 'start',
+            value: function start() {
+                WorkFlowManager.facadeMediator().publish('onStart');
+            }
+        }, {
+            key: '_window',
+            get: function get() {
+                return window;
+            }
+        }], [{
+            key: 'facadeMediator',
+            value: function facadeMediator() {
+                return _facademediator2.default;
+            }
+        }]);
+
+        return WorkFlowManager;
+    }();
 
     return WorkFlowManager;
-}();
-
-exports.default = WorkFlowManager;
+}(window);
 
 /***/ }),
 /* 5 */
@@ -20508,8 +20523,6 @@ exports.default = function () {
                                 event.preventDefault();
                                 break;
                         }
-                    } else {
-                        console.log('i am being eaten');
                     }
                 });
 
@@ -20579,7 +20592,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Obstacles = function ($) {
+exports.default = function ($) {
     var _ = _config2.default._,
         gameWidth = _config2.default.gameWidth,
         gameHeight = _config2.default.gameHeight;
@@ -20746,8 +20759,6 @@ var Obstacles = function ($) {
 
     return Obstacles;
 }(_config2.default.jQuery);
-
-exports.default = Obstacles;
 
 /***/ }),
 /* 16 */

@@ -109,8 +109,6 @@ export default (function(){
                             event.preventDefault();
                             break;
                     }
-                }else {
-                    console.log('i am being eaten');
                 }
             });
 

@@ -5,6 +5,23 @@ const assert = chai.assert;
 const expect = chai.expect;
 
 describe('Rhino Test', () => {
+    let rhino;
+    beforeEach(function() {
+        const assets = {
+            loadedAssets: [
+                {
+                    width: 1,
+                    height: 2
+                }
+            ]
+        };
+        const ctx = {
+            drawImage: function(a, b, c, d ,e){return false;}
+        };
+        Rhino.prototype.getRhinoAsset = function(a){ return 0;}
+        rhino = new Rhino(assets, {}, ctx);
+    });
+
     it('Rhino should be a function', () => {
         assert.typeOf(Rhino, 'function', "Rhino is not a function");
     });
@@ -61,6 +78,20 @@ describe('Rhino Test', () => {
     it('Rhino instance should have drawRhino method', () => {
         const rhino = new Rhino();
         assert.typeOf(rhino.drawRhino, 'function', "drawRhino should be a function");
+    });
+
+    it('Rhino::drawRhino should call changeRhinoDirection once', () => {
+        const spy = sinon.spy(rhino, 'drawRhino');
+        rhino.drawRhino();
+        spy.restore();
+        sinon.assert.calledOnce(spy);
+    });
+
+    it('Rhino::drawRhino should call the canvas drawImage method once', () => {
+        const spy = sinon.spy(rhino.ctx, 'drawImage');
+        rhino.drawRhino();
+        spy.restore();
+        sinon.assert.calledOnce(spy);
     });
 
     it('Rhino instance should have changeRhinoDirection method', () => {

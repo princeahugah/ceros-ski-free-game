@@ -2,6 +2,7 @@ import Canvas from '../js/canvas';
 const sinon = require('sinon');
 const chai = require('chai');
 const assert = chai.assert;
+chai.should();
 
 describe('Canvas Test', () => {
 

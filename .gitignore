@@ -3,4 +3,3 @@
 .ts
 .babel.rc
 node_modules
-tests/workflow.test.js
