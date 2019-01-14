@@ -20316,7 +20316,7 @@ exports.default = function ($) {
         }, {
             key: 'changeRhinoDirection',
             value: function changeRhinoDirection() {
-                if (!this.isRhinoVisible) {
+                if (!this.isRhinoVisible()) {
                     return;
                 }
                 if (chaseInterval < rhino.chaseInterval) {
