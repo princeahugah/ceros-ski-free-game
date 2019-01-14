@@ -1,5 +1,5 @@
 # Bug Fix
-The left bug has been fixed and the game no longer crasheds. The skier gets up and is facing to the left
+The left bug has been fixed and the game no longer crashes. The skier gets up and is facing to the left
 
 # New Features
 - Your Name
