@@ -43,7 +43,7 @@ export default (function($){
         loadAssets(){
             const assetPromises = [];
     
-            _.each(assets, function(asset, assetName) {
+            _.each(assets, (asset, assetName) => {
                 const assetImage = new Image();
                 const assetDeferred = new $.Deferred();
     

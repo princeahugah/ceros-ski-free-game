@@ -15,7 +15,7 @@ The left bug has been fixed and the game no longer crashes. The skier gets up an
     - The score is calculated based on total the distance covered. The distance covered is how far ski went on the Y axis.
     
 -  Game Level
-    - There are 5 levels in this game. Each level requires that you cover a certain distance. When you move from one level to the other, the distance to be covered for the new level is recalculated bearing in mind your speed since it also increases. You win the game when you finish the 10th level. You get an alert when you transition from one level to the other.
+    - There are 5 levels in this game. Each level requires that you cover a certain distance. When you move from one level to the other, the distance to be covered for the new level is recalculated bearing in mind your speed since it also increases. You win the game when you finish the 5th level. You get an alert when you transition from one level to the other.
     
 -  Game Speed
     - The speed of the game increases when you move from one level to the other. The new speed is 50% more of the old speed and it's cumulative.
@@ -33,7 +33,7 @@ The left bug has been fixed and the game no longer crashes. The skier gets up an
     - Use the **up** arrow to make the skier jump over an obstacle. When the skier is in motion and you press the **up** arrow on the keyboard, the skier jumps and continues moving in the direction before the jump.
 
 -  Feeding the Rhino
-    - At some point in the game, that is, when you have almost played half the game level, a rhino shows up. The rhino starts to chase the skier in every direction. When the skier moves to a certain direction, the rhino also moves in the same direction until it gets to skier. The hungry rhino feeds on the skier until there's no part of it left, then game over.
+    - At some point in the game, that is, when you have almost played half the game level, a rhino shows up. The rhino starts to chase the skier in every direction. When the skier moves to a certain direction, the rhino also moves in the same direction until it gets to the skier. The hungry rhino feeds on the skier until there's no part of it left, then game over.
 
 -  Play the game on this link: http://skigame.aceappsltd.com
 

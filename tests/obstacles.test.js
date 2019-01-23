@@ -2,6 +2,7 @@ import Obstacles from '../js/obstacles';
 const sinon = require('sinon');
 const chai = require('chai');
 const assert = chai.assert;
+chai.should();
 
 describe('Obstacles Test', () => {
     beforeEach(function() {
@@ -92,25 +93,24 @@ describe('Obstacles Test', () => {
         assert.typeOf(obstacles.calculateOpenPosition, 'function', "calculateOpenPosition should be a function");
     });
     
-    it('Obstacles::calculateOpenPosition should call itself when there is a collision', () => {
-        Obstacles.prototype.hasCollided = (function(){
-            let once = false; 
-            return function(x,y){
-                if(once)
-                    return false;
-                else {
-                    once=true;
-                    return {
-                        x: x,
-                        y: y
-                    };
-                }
-            }
-        })();
+    it('When no collision happens, an object should be returned when Obstacles::calculateOpenPosition is called', () => {
+        Obstacles.prototype.hasCollided = sinon.stub().returns(false);
         const obstacles = new Obstacles();
-        const spy = sinon.spy(obstacles, 'calculateOpenPosition');
+        const retVal = obstacles.calculateOpenPosition();
+        retVal.should.be.a('object');
+        retVal.should.have.property('x');
+        retVal.should.have.property('y');
+    });
+
+    it('Obstacles::calculateOpenPosition should call itself when there is a collision', () => {
+        const stub = sinon.stub();
+        stub.onCall(0).returns(true);
+        stub.onCall(1).returns(false);
+        Obstacles.prototype.hasCollided = stub;
+        const obstacles = new Obstacles();
+        const spy = sinon.stub(obstacles, 'calculateOpenPosition');
         obstacles.calculateOpenPosition();
         spy.restore();
-        sinon.assert.called(spy);
+        sinon.assert.calledOnce(spy);
     });
 });

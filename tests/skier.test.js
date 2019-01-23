@@ -43,6 +43,22 @@ describe('Skier Test', () => {
         assert.typeOf(skier.drawSkier, 'function', "drawSkier should be a function");
     });
 
+    it('Skier::drawSkier method calls context\'s drawImage method', () => {
+        Skier.prototype.getSkierAsset = sinon.stub().returns(0);
+        const assets = {
+            loadedAssets: [{width: 10, height: 5}]
+        };
+        const ctx = {
+            drawImage: function(){}
+        };
+
+        const skier = new Skier(assets, ctx);
+        const spy = sinon.spy(ctx, 'drawImage');
+        skier.drawSkier();
+        spy.restore();
+        sinon.assert.calledOnce(spy);
+    });
+
     it('Skier instance should have moveSkier method', () => {
         const skier = new Skier();
         assert.typeOf(skier.moveSkier, 'function', "moveSkier should be a function");

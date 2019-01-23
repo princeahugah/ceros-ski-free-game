@@ -7,7 +7,7 @@
         "start": "node web.js",
         "build": "webpack-dev-server --mode development",
         "build:prod": "webpack -p",
-        "test": "mocha -R spec --require babel-register -r jsdom-global/register ./tests/*.test.js"
+        "test": "mocha -R spec --require babel-register --require jsdom-global/register ./tests/*.test.js"
     },
     "author": "prince.ahugah@andela.com",
     "license": "",

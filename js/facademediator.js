@@ -45,7 +45,7 @@ export default (function(window) {
         }
 
         if(FacadeMediator.rhino && FacadeMediator.rhino.finishedEatingSkier){
-            alert('Awww! You have been eaten by a rhino'); //update scores in localstorage
+            alert('Awww! You have been eaten by a rhino');
             FacadeMediator.publish('localStorage');
             return;
         }
